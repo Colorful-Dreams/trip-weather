@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portugal &amp; Spain 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: transparent;
+      color: #1a1a18;
+      padding: 16px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2rem 1rem 1.5rem;
+    }
+
+    .trip-title {
+      font-size: 28px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 6px;
+    }
+
+    .trip-subtitle {
+      font-size: 15px;
+      color: #888780;
+      margin-bottom: 2rem;
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 99px;
+      margin-bottom: 2rem;
+    }
+
+    .status-upcoming {
+      background: #E6F1FB;
+      color: #185FA5;
+    }
+
+    .status-traveling {
+      background: #EAF3DE;
+      color: #3B6D11;
+    }
+
+    .status-returned {
+      background: #F1EFE8;
+      color: #5F5E5A;
+    }
+
+    .countdown-grid {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .countdown-box {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 14px 20px;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    .countdown-num {
+      font-size: 32px;
+      font-weight: 500;
+      color: #1a1a18;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .countdown-label {
+      font-size: 11px;
+      color: #b4b2a9;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .currently-in {
+      font-size: 15px;
+      color: #3B6D11;
+      font-weight: 500;
+      margin-bottom: 2rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 0.5px solid rgba(0,0,0,0.08);
+      margin: 0 0 1.5rem;
+    }
+
+    .cities-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #b4b2a9;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .cities-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .city-stop {
+      display: flex;
+      align-items: center;
+    }
+
+    .city-pill {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 99px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a18;
+      white-space: nowrap;
+    }
+
+    .city-pill.active {
+      background: #E1F5EE;
+      border-color: #1D9E75;
+      color: #085041;
+    }
+
+    .city-pill.home {
+      background: #F1EFE8;
+      color: #5F5E5A;
+      border-color: rgba(0,0,0,0.08);
+    }
+
+    .city-dates {
+      font-size: 10px;
+      color: #b4b2a9;
+      text-align: center;
+      margin-top: 3px;
+    }
+
+    .city-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .arrow {
+      font-size: 14px;
+      color: #D3D1C7;
+      margin: 0 4px;
+      padding-bottom: 16px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-card {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+
+    .detail-value {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 3px;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      color: #b4b2a9;
+    }
+
+    .intro-text {
+      font-size: 14px;
+      color: #5f5e5a;
+      line-height: 1.7;
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .details-grid { grid-template-columns: repeat(3, 1fr); }
+      .countdown-box { min-width: 60px; padding: 10px 14px; }
+      .countdown-num { font-size: 26px; }
+      .city-pill { font-size: 12px; padding: 4px 10px; }
+      .arrow { margin: 0 2px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="trip-title">Theresa &amp; David</div>
+  <div class="trip-subtitle">Portugal &amp; Spain &nbsp;&middot;&nbsp; April 8&ndash;25, 2026</div>
+
+  <div class="status-pill" id="status-pill">Loading...</div>
+
+  <div id="countdown-section">
+    <div class="countdown-grid" id="countdown-grid">
+      <div class="countdown-box"><div class="countdown-num" id="cd-days">--</div><div class="countdown-label">days</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-label">hours</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="cd-mins">--</div><div class="countdown-label">mins</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="cd-secs">--</div><div class="countdown-label">secs</div></div>
+    </div>
+    <div id="countdown-caption" style="font-size:13px;color:#888780;margin-bottom:1.5rem;margin-top:-0.5rem;"></div>
+  </div>
+
+  <div id="currently-section" style="display:none;">
+    <div class="currently-in" id="currently-text"></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="cities-label">The route</div>
+<div class="cities-row" id="cities-row">
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill home" id="city-newark-out">Newark</div>
+      <div class="city-dates">Apr 8</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill" id="city-lisbon">Lisbon</div>
+      <div class="city-dates">Apr 9&ndash;13</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill" id="city-seville">Seville</div>
+      <div class="city-dates">Apr 13&ndash;16</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill" id="city-madrid">Madrid</div>
+      <div class="city-dates">Apr 16&ndash;19</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill" id="city-valencia">Valencia</div>
+      <div class="city-dates">Apr 19&ndash;22</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill" id="city-barcelona">Barcelona</div>
+      <div class="city-dates">Apr 22&ndash;25</div>
+    </div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="city-stop">
+    <div class="city-block">
+      <div class="city-pill home" id="city-newark-in">Newark</div>
+      <div class="city-dates">Apr 25</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="details-grid">
+  <div class="detail-card">
+    <div class="detail-value">17</div>
+    <div class="detail-label">nights away</div>
+  </div>
+  <div class="detail-card">
+    <div class="detail-value">5</div>
+    <div class="detail-label">cities</div>
+  </div>
+  <div class="detail-card">
+    <div class="detail-value">2</div>
+    <div class="detail-label">countries</div>
+  </div>
+</div>
+
+<p class="intro-text">
+  Follow along as we travel through Portugal and Spain &mdash; from the cobblestone hills of Lisbon and the grandeur of Seville to the museums of Madrid, the beaches of Valencia, and the Gaud&iacute; masterpieces of Barcelona. Check back here for weather updates, daily itineraries, and trip notes.
+</p>
+
+<script>
+  var DEPART  = new Date("2026-04-08T20:25:00-04:00");
+  var RETURN  = new Date("2026-04-25T12:00:00+02:00");
+
+  var cityWindows = [
+    { id: "city-lisbon",    start: new Date("2026-04-09T00:00:00Z"), end: new Date("2026-04-13T00:00:00Z"), label: "Currently in Lisbon, Portugal" },
+    { id: "city-seville",   start: new Date("2026-04-13T00:00:00Z"), end: new Date("2026-04-16T00:00:00Z"), label: "Currently in Seville, Spain" },
+    { id: "city-madrid",    start: new Date("2026-04-16T00:00:00Z"), end: new Date("2026-04-19T00:00:00Z"), label: "Currently in Madrid, Spain" },
+    { id: "city-valencia",  start: new Date("2026-04-19T00:00:00Z"), end: new Date("2026-04-22T00:00:00Z"), label: "Currently in Valencia, Spain" },
+    { id: "city-barcelona", start: new Date("2026-04-22T00:00:00Z"), end: new Date("2026-04-25T12:00:00Z"), label: "Currently in Barcelona, Spain" }
+  ];
+
+  function pad(n) { return n < 10 ? "0" + n : String(n); }
+
+  function update() {
+    var now = new Date();
+    var pill    = document.getElementById("status-pill");
+    var cdSec   = document.getElementById("countdown-section");
+    var curSec  = document.getElementById("currently-section");
+    var curText = document.getElementById("currently-text");
+
+    if (now < DEPART) {
+      var diff = DEPART - now;
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      document.getElementById("cd-days").textContent  = d;
+      document.getElementById("cd-hours").textContent = pad(h);
+      document.getElementById("cd-mins").textContent  = pad(m);
+      document.getElementById("cd-secs").textContent  = pad(s);
+      document.getElementById("countdown-caption").textContent = "until departure from Newark";
+      pill.textContent = "Departing April 8";
+      pill.className = "status-pill status-upcoming";
+      cdSec.style.display  = "block";
+      curSec.style.display = "none";
+
+    } else if (now >= DEPART && now < RETURN) {
+      pill.textContent = "Currently traveling";
+      pill.className = "status-pill status-traveling";
+      cdSec.style.display  = "none";
+      curSec.style.display = "block";
+
+      var currentCity = null;
+      for (var i = 0; i < cityWindows.length; i++) {
+        var c = cityWindows[i];
+        if (now >= c.start && now < c.end) {
+          currentCity = c;
+          document.getElementById(c.id).classList.add("active");
+        }
+      }
+      if (currentCity) {
+        curText.textContent = currentCity.label;
+      } else {
+        curText.textContent = "In transit";
+      }
+
+    } else {
+      pill.textContent = "Trip complete";
+      pill.className = "status-pill status-returned";
+      cdSec.style.display  = "none";
+      curSec.style.display = "block";
+      curText.textContent  = "Back home in New Jersey";
+      curText.style.color  = "#5F5E5A";
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
+</script>
+</body>
+</html>
