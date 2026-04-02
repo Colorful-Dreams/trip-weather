@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotels</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: transparent;
+      color: #1a1a18;
+      padding: 16px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #b4b2a9;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .hotel-card {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .hotel-card.active {
+      border: 1.5px solid #1D9E75;
+      background: #f9fefc;
+    }
+
+    .hotel-card.past {
+      opacity: 0.55;
+    }
+
+    .city-badge {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .badge-lisbon    { background: #E6F1FB; color: #185FA5; }
+    .badge-seville   { background: #FAEEDA; color: #854F0B; }
+    .badge-madrid    { background: #EEEDFE; color: #534AB7; }
+    .badge-valencia  { background: #EAF3DE; color: #3B6D11; }
+    .badge-barcelona { background: #FBEAF0; color: #993556; }
+
+    .hotel-main { flex: 1; }
+
+    .hotel-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 3px;
+    }
+
+    .hotel-dates {
+      font-size: 13px;
+      color: #888780;
+      margin-bottom: 8px;
+    }
+
+    .hotel-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #5f5e5a;
+      background: #f5f5f3;
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    .meta-chip .chip-label {
+      color: #b4b2a9;
+      font-size: 11px;
+    }
+
+    .nights-badge {
+      font-size: 11px;
+      color: #888780;
+      background: #f5f5f3;
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    .active-tag {
+      font-size: 11px;
+      font-weight: 500;
+      color: #085041;
+      background: #E1F5EE;
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #b4b2a9;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 500px) {
+      .hotel-card { flex-direction: column; gap: 8px; }
+      .city-badge { align-self: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="section-label">Accommodations</div>
+
+<div id="hotel-list"></div>
+<div class="note" id="trip-note"></div>
+
+<script>
+  var hotels = [
+    {
+      city: "Lisbon",
+      badgeClass: "badge-lisbon",
+      name: "The Ivens, Autograph Collection",
+      checkIn:  "2026-04-09",
+      checkOut: "2026-04-13",
+      nights: 4,
+      conf: "90934178",
+      note: ""
+    },
+    {
+      city: "Seville",
+      badgeClass: "badge-seville",
+      name: "Hotel Alfonso XIII, a Luxury Collection Hotel",
+      checkIn:  "2026-04-13",
+      checkOut: "2026-04-16",
+      nights: 3,
+      conf: "90954648",
+      note: ""
+    },
+    {
+      city: "Madrid",
+      badgeClass: "badge-madrid",
+      name: "The Palace, a Luxury Collection Hotel",
+      checkIn:  "2026-04-16",
+      checkOut: "2026-04-19",
+      nights: 3,
+      conf: "",
+      note: "Confirmation pending"
+    },
+    {
+      city: "Valencia",
+      badgeClass: "badge-valencia",
+      name: "Las Arenas Balneario Resort",
+      checkIn:  "2026-04-19",
+      checkOut: "2026-04-22",
+      nights: 3,
+      conf: "",
+      res: "25072859963",
+      note: ""
+    },
+    {
+      city: "Barcelona",
+      badgeClass: "badge-barcelona",
+      name: "Cotton House Hotel, Autograph Collection",
+      checkIn:  "2026-04-22",
+      checkOut: "2026-04-25",
+      nights: 3,
+      conf: "89578107",
+      note: ""
+    }
+  ];
+
+  var MONTH = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function fmtDate(str) {
+    var d = new Date(str + "T12:00:00Z");
+    return MONTH[d.getUTCMonth()] + " " + d.getUTCDate();
+  }
+
+  function render() {
+    var now = new Date();
+    var todayStr = now.toISOString().slice(0, 10);
+    var container = document.getElementById("hotel-list");
+    var html = "";
+    var anyActive = false;
+
+    for (var i = 0; i < hotels.length; i++) {
+      var h = hotels[i];
+      var isPast   = todayStr >= h.checkOut;
+      var isActive = todayStr >= h.checkIn && todayStr < h.checkOut;
+      if (isActive) anyActive = true;
+
+      var cardClass = "hotel-card" + (isActive ? " active" : "") + (isPast ? " past" : "");
+
+      html += '<div class="' + cardClass + '">';
+      html += '<div class="city-badge ' + h.badgeClass + '">' + h.city + '</div>';
+      html += '<div class="hotel-main">';
+      html += '<div class="hotel-name">' + h.name + '</div>';
+      html += '<div class="hotel-dates">' + fmtDate(h.checkIn) + ' &ndash; ' + fmtDate(h.checkOut) + '</div>';
+      html += '<div class="hotel-meta">';
+      html += '<span class="nights-badge">' + h.nights + ' nights</span>';
+
+      if (h.conf) {
+        html += '<span class="meta-chip"><span class="chip-label">Conf&nbsp;</span>#' + h.conf + '</span>';
+      }
+      if (h.res) {
+        html += '<span class="meta-chip"><span class="chip-label">Res&nbsp;</span>#' + h.res + '</span>';
+      }
+      if (h.note) {
+        html += '<span class="meta-chip" style="color:#854F0B;">' + h.note + '</span>';
+      }
+      if (isActive) {
+        html += '<span class="active-tag">Staying here now</span>';
+      }
+
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+
+    var note = document.getElementById("trip-note");
+    if (todayStr < "2026-04-09") {
+      note.textContent = "Check-in begins April 9 in Lisbon";
+    } else if (todayStr >= "2026-04-25") {
+      note.textContent = "Trip complete \u2014 all check-outs done";
+    } else {
+      note.textContent = "";
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
