@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Portugal &amp; Spain 2026 &mdash; Trip Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #1c1a17;
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --muted: #9b9489;
+    --rule: rgba(0,0,0,0.08);
+    --accent: #c8793a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+  .header {
+    padding: 24px 24px 18px;
+    border-bottom: 0.5px solid var(--rule);
+    display: flex; align-items: baseline;
+    justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    background: var(--card);
+  }
+  .site-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.2px; }
+  .site-title em { font-style: italic; color: var(--accent); }
+  .site-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-counts { display: flex; gap: 16px; }
+  .count-item { text-align: right; }
+  .count-num { font-size: 20px; font-weight: 500; line-height: 1; }
+  .count-label { font-size: 11px; color: var(--muted); }
+
+  .tabs {
+    display: flex; padding: 0 24px;
+    border-bottom: 0.5px solid var(--rule);
+    background: var(--card);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 13px 18px; border: none; background: none; color: var(--muted);
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -0.5px; transition: color 0.15s;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .filter-bar {
+    padding: 12px 24px; display: flex; gap: 6px; flex-wrap: wrap;
+    border-bottom: 0.5px solid var(--rule); background: var(--paper);
+  }
+  .city-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 99px; border: 0.5px solid rgba(0,0,0,0.13);
+    background: var(--card); color: #5f5e5a; cursor: pointer; transition: all 0.15s;
+  }
+  .city-btn:hover { border-color: rgba(0,0,0,0.25); }
+  .city-btn.active-all { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .city-btn.active-lisbon    { background: #E6F1FB; color: #185FA5; border-color: #185FA5; }
+  .city-btn.active-seville   { background: #FAEEDA; color: #854F0B; border-color: #854F0B; }
+  .city-btn.active-madrid    { background: #EEEDFE; color: #534AB7; border-color: #534AB7; }
+  .city-btn.active-valencia  { background: #EAF3DE; color: #3B6D11; border-color: #3B6D11; }
+  .city-btn.active-barcelona { background: #FBEAF0; color: #993556; border-color: #993556; }
+
+  .main { padding: 20px 24px 40px; }
+
+  .state-msg { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .state-msg strong { display: block; font-size: 16px; color: var(--ink); margin-bottom: 6px; font-weight: 500; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--rule); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-head { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; }
+  .section-head h2 { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 400; font-style: italic; color: var(--ink); white-space: nowrap; }
+  .section-divider { flex: 1; height: 0.5px; background: var(--rule); }
+  .section-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .photo-item { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; cursor: pointer; background: #ede9e2; }
+  .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; display: block; }
+  .photo-item:hover img { transform: scale(1.04); }
+  .photo-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.55)); padding: 24px 10px 8px; opacity: 0; transition: opacity 0.2s; }
+  .photo-item:hover .photo-overlay { opacity: 1; }
+  .photo-name { font-size: 11px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .city-dot { position: absolute; top: 8px; left: 8px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.85); }
+
+  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+  .video-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 0.5px solid var(--rule); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+  .video-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .video-thumb { position: relative; aspect-ratio: 16/9; background: #1c1a17; overflow: hidden; }
+  .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .play-triangle { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 14px solid var(--ink); margin-left: 3px; }
+  .video-info { padding: 12px 14px; }
+  .city-badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+  .badge-lisbon    { background: #E6F1FB; color: #185FA5; }
+  .badge-seville   { background: #FAEEDA; color: #854F0B; }
+  .badge-madrid    { background: #EEEDFE; color: #534AB7; }
+  .badge-valencia  { background: #EAF3DE; color: #3B6D11; }
+  .badge-barcelona { background: #FBEAF0; color: #993556; }
+  .badge-transit   { background: #F1EFE8; color: #5F5E5A; }
+  .video-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .video-meta { font-size: 11px; color: var(--muted); }
+
+  .lightbox-bg { display: none; position: fixed; inset: 0; background: rgba(20,18,15,0.93); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+  .lightbox-bg.open { display: flex; }
+  .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
+  .lightbox-inner img { max-width: 100%; max-height: 84vh; border-radius: 8px; object-fit: contain; display: block; }
+  .lb-close { position: absolute; top: -36px; right: 0; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; opacity: 0.7; font-family: 'DM Sans', sans-serif; }
+  .lb-close:hover { opacity: 1; }
+  .lb-caption { color: rgba(255,255,255,0.65); font-size: 12px; text-align: center; margin-top: 10px; }
+
+  .video-modal-bg { display: none; position: fixed; inset: 0; background: rgba(20,18,15,0.95); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+  .video-modal-bg.open { display: flex; }
+  .video-modal-inner { position: relative; width: 100%; max-width: 820px; }
+  .vm-close { position: absolute; top: -36px; right: 0; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; opacity: 0.7; font-family: 'DM Sans', sans-serif; }
+  .vm-close:hover { opacity: 1; }
+  .video-embed-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; }
+  .video-embed-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  @media (max-width: 520px) {
+    .header, .main { padding: 16px; }
+    .tabs, .filter-bar { padding: 0 12px; }
+    .filter-bar { padding: 10px 12px; }
+    .photo-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 5px; }
+    .video-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="site-title">Theresa &amp; David &mdash; <em>Portugal &amp; Spain</em></div>
+    <div class="site-sub">Trip journal &nbsp;&middot;&nbsp; April 8&ndash;25, 2026</div>
+  </div>
+  <div class="header-counts">
+    <div class="count-item"><div class="count-num" id="photo-count">--</div><div class="count-label">photos</div></div>
+    <div class="count-item"><div class="count-num" id="video-count">--</div><div class="count-label">videos</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('photos')">Photos</button>
+  <button class="tab-btn" onclick="switchTab('videos')">Videos</button>
+</div>
+
+<div class="filter-bar">
+  <button class="city-btn active-all" onclick="setCity('all')">All</button>
+  <button class="city-btn" data-city="lisbon"    onclick="setCity('lisbon')">Lisbon</button>
+  <button class="city-btn" data-city="seville"   onclick="setCity('seville')">Seville</button>
+  <button class="city-btn" data-city="madrid"    onclick="setCity('madrid')">Madrid</button>
+  <button class="city-btn" data-city="valencia"  onclick="setCity('valencia')">Valencia</button>
+  <button class="city-btn" data-city="barcelona" onclick="setCity('barcelona')">Barcelona</button>
+</div>
+
+<div class="main" id="main-content">
+  <div class="state-msg"><div class="spinner"></div>Loading your trip media...</div>
+</div>
+
+<div class="lightbox-bg" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lb-close" onclick="closeLightbox()">&#10005;</button>
+    <img id="lb-img" src="" alt=""/>
+    <div class="lb-caption" id="lb-cap"></div>
+  </div>
+</div>
+
+<div class="video-modal-bg" id="video-modal" onclick="closeVideo()">
+  <div class="video-modal-inner" onclick="event.stopPropagation()">
+    <button class="vm-close" onclick="closeVideo()">&#10005;</button>
+    <div class="video-embed-wrap">
+      <iframe id="video-frame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+var API_KEY     = "AIzaSyA_FoPabVkMChBwVK4zR-DBsYvFg4D5Sb0";
+var PLAYLIST_ID = "PL6VswemJYEtPAomyAv3aYJJZsZxPUSdI7";
+var FOLDER_ID   = "1gZa3UwD_fOkpj89MoDyKYsS3O2z9ytWE";
+
+var allPhotos   = [];
+var allVideos   = [];
+var currentTab  = "photos";
+var currentCity = "all";
+
+var CITY_KEYWORDS = {
+  lisbon:    ["lisbon","lisboa","alfama","belem","chiado","sintra","bairro","faia","jeronimos","sao jorge","santa luzia"],
+  seville:   ["seville","sevilla","alcazar","giralda","cathedral","triana","arenal","maria luisa","plaza de espana"],
+  madrid:    ["madrid","prado","retiro","botín","botin","plaza mayor","sol","reina sofia","palace","almudena"],
+  valencia:  ["valencia","turia","paella","arenas","malvarrosa","pepica","arts and sciences"],
+  barcelona: ["barcelona","gaudi","sagrada","guell","pedrera","batllo","rambla","gothic","eixample","born","gracia"]
+};
+
+var CITY_COLORS = {
+  lisbon:"#185FA5", seville:"#854F0B", madrid:"#534AB7",
+  valencia:"#3B6D11", barcelona:"#993556", transit:"#888780"
+};
+
+var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function detectCity(str) {
+  var s = (str||"").toLowerCase();
+  for (var city in CITY_KEYWORDS) {
+    var kws = CITY_KEYWORDS[city];
+    for (var i = 0; i < kws.length; i++) {
+      if (s.indexOf(kws[i]) !== -1) return city;
+    }
+  }
+  return "transit";
+}
+
+function fmtDate(str) {
+  var d = new Date((str||"").slice(0,10) + "T12:00:00Z");
+  return isNaN(d) ? "" : MONTHS[d.getUTCMonth()] + " " + d.getUTCDate();
+}
+
+function esc(s) {
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ── Fetch photos from Drive ── */
+function fetchPhotos(token, acc) {
+  acc = acc || [];
+  var q  = encodeURIComponent("'" + FOLDER_ID + "' in parents and mimeType contains 'image/' and trashed=false");
+  var url = "https://www.googleapis.com/drive/v3/files?q=" + q
+    + "&fields=nextPageToken,files(id,name,createdTime)"
+    + "&orderBy=createdTime&pageSize=100&key=" + API_KEY;
+  if (token) url += "&pageToken=" + token;
+
+  fetch(url).then(function(r){ return r.json(); }).then(function(data){
+    if (data.error) { showErr("photos", data.error.message); return; }
+    var files = data.files || [];
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      acc.push({
+        id:    f.id,
+        name:  f.name,
+        thumb: "https://drive.google.com/thumbnail?id=" + f.id + "&sz=w400",
+        full:  "https://lh3.googleusercontent.com/d/" + f.id,
+        city:  detectCity(f.name),
+        date:  (f.createdTime||"").slice(0,10)
+      });
+    }
+    if (data.nextPageToken) {
+      fetchPhotos(data.nextPageToken, acc);
+    } else {
+      allPhotos = acc;
+      document.getElementById("photo-count").textContent = allPhotos.length;
+      if (currentTab === "photos") renderPhotos();
+    }
+  }).catch(function(e){ showErr("photos", e.message); });
+}
+
+/* ── Fetch videos from YouTube playlist ── */
+function fetchVideos(token, acc) {
+  acc = acc || [];
+  var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
+    + "&playlistId=" + PLAYLIST_ID + "&maxResults=50&key=" + API_KEY;
+  if (token) url += "&pageToken=" + token;
+
+  fetch(url).then(function(r){ return r.json(); }).then(function(data){
+    if (data.error) { showErr("videos", data.error.message); return; }
+    var items = data.items || [];
+    for (var i = 0; i < items.length; i++) {
+      var s = items[i].snippet;
+      if (!s || !s.resourceId || s.resourceId.kind !== "youtube#video") continue;
+      var th = s.thumbnails || {};
+      var thumb = ((th.maxres || th.high || th.medium || th.default) || {}).url || "";
+      acc.push({
+        id:    s.resourceId.videoId,
+        title: s.title || "Untitled",
+        thumb: thumb,
+        city:  detectCity(s.title + " " + (s.description||"")),
+        date:  (s.publishedAt||"").slice(0,10)
+      });
+    }
+    if (data.nextPageToken) {
+      fetchVideos(data.nextPageToken, acc);
+    } else {
+      allVideos = acc;
+      document.getElementById("video-count").textContent = allVideos.length;
+      if (currentTab === "videos") renderVideos();
+    }
+  }).catch(function(e){ showErr("videos", e.message); });
+}
+
+/* ── Render photos ── */
+var CITY_ORDER = ["lisbon","seville","madrid","valencia","barcelona","transit"];
+
+function renderPhotos() {
+  var c = document.getElementById("main-content");
+  var list = currentCity === "all" ? allPhotos : allPhotos.filter(function(p){ return p.city === currentCity; });
+
+  if (list.length === 0) {
+    c.innerHTML = '<div class="state-msg"><strong>' +
+      (allPhotos.length === 0 ? "No photos yet" : "No " + currentCity + " photos yet") +
+      '</strong>Photos will appear here automatically as you add images to your Google Drive folder.</div>';
+    return;
+  }
+
+  var groups = {};
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    if (!groups[p.city]) groups[p.city] = [];
+    groups[p.city].push(p);
+  }
+
+  var html = "";
+  var citiesToShow = currentCity === "all" ? CITY_ORDER : [currentCity];
+
+  for (var ci = 0; ci < citiesToShow.length; ci++) {
+    var city = citiesToShow[ci];
+    var items = groups[city];
+    if (!items || items.length === 0) continue;
+    var label = city === "transit" ? "In transit" : city.charAt(0).toUpperCase() + city.slice(1);
+
+    html += '<div style="margin-bottom:28px;">';
+    html += '<div class="section-head">'
+          + '<h2>' + label + '</h2>'
+          + '<div class="section-divider"></div>'
+          + '<span class="section-count">' + items.length + ' photo' + (items.length !== 1 ? 's' : '') + '</span>'
+          + '</div>';
+    html += '<div class="photo-grid">';
+    for (var pi = 0; pi < items.length; pi++) {
+      var ph = items[pi];
+      html += '<div class="photo-item" onclick="openLightbox(\'' + esc(ph.full) + '\',\'' + esc(ph.name) + '\')">'
+            + '<img src="' + esc(ph.thumb) + '" alt="' + esc(ph.name) + '" loading="lazy" onerror="this.parentElement.style.display=\'none\'">'
+            + '<div class="city-dot" style="background:' + (CITY_COLORS[ph.city]||"#888") + '"></div>'
+            + '<div class="photo-overlay"><div class="photo-name">' + esc(ph.name) + '</div></div>'
+            + '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  c.innerHTML = html;
+}
+
+/* ── Render videos ── */
+function renderVideos() {
+  var c = document.getElementById("main-content");
+  var list = currentCity === "all" ? allVideos : allVideos.filter(function(v){ return v.city === currentCity; });
+
+  if (list.length === 0) {
+    c.innerHTML = '<div class="state-msg"><strong>' +
+      (allVideos.length === 0 ? "No videos yet" : "No " + currentCity + " videos yet") +
+      '</strong>Videos will appear here automatically once uploaded to your <a href="https://youtube.com/@davidmonahan-g6l" target="_blank" style="color:var(--accent)">Portugal &amp; Spain 2026 playlist</a>.</div>';
+    return;
+  }
+
+  var groups = {};
+  for (var i = 0; i < list.length; i++) {
+    var v = list[i];
+    if (!groups[v.city]) groups[v.city] = [];
+    groups[v.city].push(v);
+  }
+
+  var html = "";
+  var citiesToShow = currentCity === "all" ? CITY_ORDER : [currentCity];
+
+  for (var ci = 0; ci < citiesToShow.length; ci++) {
+    var city = citiesToShow[ci];
+    var items = groups[city];
+    if (!items || items.length === 0) continue;
+    var label = city === "transit" ? "General" : city.charAt(0).toUpperCase() + city.slice(1);
+
+    html += '<div style="margin-bottom:28px;">';
+    html += '<div class="section-head">'
+          + '<h2>' + label + '</h2>'
+          + '<div class="section-divider"></div>'
+          + '<span class="section-count">' + items.length + ' video' + (items.length !== 1 ? 's' : '') + '</span>'
+          + '</div>';
+    html += '<div class="video-grid">';
+    for (var vi = 0; vi < items.length; vi++) {
+      var vd = items[vi];
+      var cityLabel = vd.city === "transit" ? "General" : vd.city.charAt(0).toUpperCase() + vd.city.slice(1);
+      html += '<div class="video-card" onclick="openVideo(\'' + esc(vd.id) + '\')">'
+            + '<div class="video-thumb">'
+            + (vd.thumb ? '<img src="' + esc(vd.thumb) + '" alt="" loading="lazy">' : '')
+            + '<div class="play-btn"><div class="play-triangle"></div></div>'
+            + '</div>'
+            + '<div class="video-info">'
+            + '<div class="city-badge badge-' + vd.city + '">' + cityLabel + '</div>'
+            + '<div class="video-title">' + esc(vd.title) + '</div>'
+            + (vd.date ? '<div class="video-meta">' + fmtDate(vd.date) + '</div>' : '')
+            + '</div></div>';
+    }
+    html += '</div></div>';
+  }
+
+  c.innerHTML = html;
+}
+
+/* ── Tab & filter switching ── */
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(function(b){
+    b.classList.toggle("active", b.textContent.toLowerCase() === tab);
+  });
+  if (tab === "photos") renderPhotos();
+  else renderVideos();
+}
+
+function setCity(city) {
+  currentCity = city;
+  document.querySelectorAll(".city-btn").forEach(function(b){
+    b.className = "city-btn";
+    var bc = b.getAttribute("data-city");
+    if (city === "all" && !bc) b.classList.add("active-all");
+    else if (bc === city) b.classList.add("active-" + city);
+  });
+  if (currentTab === "photos") renderPhotos();
+  else renderVideos();
+}
+
+/* ── Lightbox ── */
+function openLightbox(src, name) {
+  document.getElementById("lb-img").src = src;
+  document.getElementById("lb-cap").textContent = name;
+  document.getElementById("lightbox").classList.add("open");
+}
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("open");
+  document.getElementById("lb-img").src = "";
+}
+
+/* ── Video modal ── */
+function openVideo(id) {
+  document.getElementById("video-frame").src = "https://www.youtube.com/embed/" + id + "?autoplay=1&rel=0";
+  document.getElementById("video-modal").classList.add("open");
+}
+function closeVideo() {
+  document.getElementById("video-modal").classList.remove("open");
+  document.getElementById("video-frame").src = "";
+}
+
+function showErr(type, msg) {
+  document.getElementById("main-content").innerHTML =
+    '<div class="state-msg"><strong>Could not load ' + type + '</strong>' + esc(msg||"") + '</div>';
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape") { closeLightbox(); closeVideo(); }
+});
+
+/* ── Boot ── */
+fetchPhotos();
+fetchVideos();
+</script>
+</body>
+</html>
