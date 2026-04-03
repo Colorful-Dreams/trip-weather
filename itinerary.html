@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Itinerary &mdash; Portugal &amp; Spain 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #1c1a17;
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --muted: #9b9489;
+    --rule: rgba(0,0,0,0.08);
+    --accent: #c8793a;
+    --accent-light: #fdf0e6;
+    --lisbon:    #185FA5; --lisbon-bg:    #E6F1FB;
+    --seville:   #854F0B; --seville-bg:   #FAEEDA;
+    --madrid:    #534AB7; --madrid-bg:    #EEEDFE;
+    --valencia:  #3B6D11; --valencia-bg:  #EAF3DE;
+    --barcelona: #993556; --barcelona-bg: #FBEAF0;
+    --travel:    #5F5E5A; --travel-bg:    #F1EFE8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); }
+
+  /* Header */
+  .header {
+    background: var(--card);
+    border-bottom: 0.5px solid var(--rule);
+    padding: 24px 24px 20px;
+  }
+  .header-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+  }
+  .site-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.2px; }
+  .site-title em { font-style: italic; color: var(--accent); }
+  .site-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .trip-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+  .stat { text-align: right; }
+  .stat-num { font-size: 20px; font-weight: 500; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--muted); }
+
+  /* City nav pills */
+  .city-nav {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .city-pill {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 99px; border: 0.5px solid rgba(0,0,0,0.13);
+    background: var(--card); color: #5f5e5a; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block;
+  }
+  .city-pill:hover { border-color: rgba(0,0,0,0.28); }
+  .pill-lisbon    { background: var(--lisbon-bg);    color: var(--lisbon);    border-color: var(--lisbon); }
+  .pill-seville   { background: var(--seville-bg);   color: var(--seville);   border-color: var(--seville); }
+  .pill-madrid    { background: var(--madrid-bg);    color: var(--madrid);    border-color: var(--madrid); }
+  .pill-valencia  { background: var(--valencia-bg);  color: var(--valencia);  border-color: var(--valencia); }
+  .pill-barcelona { background: var(--barcelona-bg); color: var(--barcelona); border-color: var(--barcelona); }
+
+  /* Main layout */
+  .main { padding: 28px 24px 60px; max-width: 860px; margin: 0 auto; }
+
+  /* City section */
+  .city-section { margin-bottom: 48px; scroll-margin-top: 16px; }
+  .city-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+    padding-bottom: 14px; border-bottom: 0.5px solid var(--rule);
+  }
+  .city-color-bar { width: 4px; height: 44px; border-radius: 99px; flex-shrink: 0; }
+  .city-header-text {}
+  .city-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; letter-spacing: -0.3px; }
+  .city-dates { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .city-hotel { font-size: 12px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+  /* Day card */
+  .day-card {
+    background: var(--card);
+    border: 0.5px solid var(--rule);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .day-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 0.5px solid transparent;
+    transition: background 0.15s;
+  }
+  .day-header:hover { background: #faf8f4; }
+  .day-header.open { border-bottom-color: var(--rule); }
+  .day-num {
+    font-size: 11px; font-weight: 500; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    min-width: 38px;
+  }
+  .day-date-block { flex: 1; }
+  .day-weekday { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .day-full-date { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .day-focus {
+    font-size: 12px; color: var(--muted);
+    font-style: italic;
+    text-align: right;
+    max-width: 200px;
+  }
+  .day-chevron {
+    font-size: 12px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0;
+  }
+  .day-header.open .day-chevron { transform: rotate(180deg); }
+
+  /* Day body */
+  .day-body { display: none; padding: 0 18px 16px; }
+  .day-body.open { display: block; }
+
+  /* Schedule rows */
+  .schedule-row {
+    display: flex; gap: 12px; padding: 9px 0;
+    border-bottom: 0.5px solid var(--rule);
+    align-items: flex-start;
+  }
+  .schedule-row:last-child { border-bottom: none; }
+  .sched-time {
+    font-size: 12px; font-weight: 500; color: var(--muted);
+    min-width: 68px; padding-top: 1px; flex-shrink: 0;
+    text-align: right;
+  }
+  .sched-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    margin-top: 5px; flex-shrink: 0;
+  }
+  .sched-content { flex: 1; }
+  .sched-name { font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+  .sched-detail { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+  /* Tags */
+  .tag {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 99px; margin-left: 6px;
+    vertical-align: middle; position: relative; top: -1px;
+  }
+  .tag-dining    { background: #FAECE7; color: #993C1D; }
+  .tag-activity  { background: #EEEDFE; color: #534AB7; }
+  .tag-show      { background: #FBEAF0; color: #993556; }
+  .tag-travel    { background: #F1EFE8; color: #5F5E5A; }
+  .tag-confirmed { background: #EAF3DE; color: #3B6D11; }
+
+  /* Travel day card */
+  .travel-card {
+    background: var(--card);
+    border: 0.5px solid var(--rule);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .travel-icon {
+    font-size: 20px; flex-shrink: 0;
+    width: 40px; height: 40px; background: var(--travel-bg);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  }
+  .travel-main { flex: 1; }
+  .travel-route { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .travel-detail { font-size: 12px; color: var(--muted); }
+  .travel-meta { text-align: right; }
+  .travel-time { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .travel-code { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Notes */
+  .day-note {
+    background: var(--accent-light);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: #7a4820;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* Section divider */
+  .section-rule {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 0 16px;
+  }
+  .section-rule-line { flex: 1; height: 0.5px; background: var(--rule); }
+  .section-rule-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  @media (max-width: 520px) {
+    .header, .main { padding: 16px; }
+    .city-name { font-size: 22px; }
+    .day-focus { display: none; }
+    .travel-meta { display: none; }
+  }
+
+  /* ── Edit mode UI ── */
+  .edit-mode-toggle {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 8px;
+    border: 0.5px solid rgba(0,0,0,0.15);
+    background: #fff; color: #5f5e5a; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-mode-toggle.active { background: #1c1a17; color: #fff; border-color: #1c1a17; }
+  .edit-mode-toggle:hover:not(.active) { background: #f5f5f3; }
+
+  .row-actions {
+    display: none;
+    gap: 4px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+  body.edit-mode .row-actions { display: flex; }
+
+  .row-btn {
+    font-size: 11px; font-family: 'DM Sans', sans-serif;
+    padding: 3px 8px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.13);
+    cursor: pointer; background: #fff; color: #5f5e5a; white-space: nowrap;
+    line-height: 1.4;
+  }
+  .row-btn:hover { background: #f5f5f3; }
+  .row-btn.del { color: #a32d2d; border-color: rgba(163,45,45,0.18); }
+  .row-btn.del:hover { background: #fcebeb; }
+
+  .add-row-btn {
+    display: none;
+    width: 100%; margin-top: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 7px 12px; border-radius: 8px;
+    border: 0.5px dashed rgba(0,0,0,0.18);
+    background: transparent; color: var(--muted); cursor: pointer;
+    text-align: left; transition: background 0.15s;
+  }
+  .add-row-btn:hover { background: #f5f5f3; color: var(--ink); }
+  body.edit-mode .add-row-btn { display: block; }
+
+  .custom-badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 99px; margin-left: 6px;
+    background: #E6F1FB; color: #185FA5;
+    vertical-align: middle; position: relative; top: -1px;
+  }
+  .custom-row { background: #fdfcfa; }
+
+  /* ── Modal ── */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,18,15,0.55); z-index: 200;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 16px; padding: 24px;
+    width: 100%; max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 400;
+    font-style: italic; color: #1c1a17; margin-bottom: 18px;
+  }
+  .modal-field { margin-bottom: 14px; }
+  .modal-label {
+    display: block; font-size: 11px; font-weight: 500; color: #9b9489;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px;
+  }
+  .modal-input, .modal-select, .modal-textarea {
+    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    padding: 8px 12px; border-radius: 8px;
+    border: 0.5px solid rgba(0,0,0,0.18); color: #1c1a17;
+    background: #faf8f4; outline: none;
+  }
+  .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+    border-color: #c8793a; box-shadow: 0 0 0 2px rgba(200,121,58,0.12);
+  }
+  .modal-textarea { resize: vertical; min-height: 68px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .modal-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 8px 18px; border-radius: 8px; cursor: pointer; border: none;
+  }
+  .modal-btn.cancel { background: #f5f5f3; color: #5f5e5a; }
+  .modal-btn.cancel:hover { background: #ede9e2; }
+  .modal-btn.save { background: #1c1a17; color: #fff; }
+  .modal-btn.save:hover { opacity: 0.88; }
+  .modal-btn.danger { background: #fcebeb; color: #a32d2d; margin-right: auto; }
+  .modal-btn.danger:hover { background: #f7c1c1; }
+
+  .deleted-row { display: none !important; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="site-title">Theresa &amp; David &mdash; <em>Portugal &amp; Spain 2026</em></div>
+      <div class="site-sub">Day-by-day itinerary &nbsp;&middot;&nbsp; April 8&ndash;25, 2026</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><button class="edit-mode-toggle" id="edit-toggle" onclick="toggleEditMode()" title="Enable editing">Edit itinerary</button><div class="trip-stats">
+      <div class="stat"><div class="stat-num">17</div><div class="stat-label">nights</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">cities</div></div>
+      <div class="stat"><div class="stat-num">18</div><div class="stat-label">reservations</div></div>
+    </div></div>
+  </div>
+  <div class="city-nav">
+    <a class="city-pill pill-lisbon"    href="#lisbon">Lisbon</a>
+    <a class="city-pill pill-seville"   href="#seville">Seville</a>
+    <a class="city-pill pill-madrid"    href="#madrid">Madrid</a>
+    <a class="city-pill pill-valencia"  href="#valencia">Valencia</a>
+    <a class="city-pill pill-barcelona" href="#barcelona">Barcelona</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══ DEPARTURE ══ -->
+  <div class="city-section" id="departure">
+    <div class="section-rule"><div class="section-rule-line"></div><div class="section-rule-label">Departure</div><div class="section-rule-line"></div></div>
+    <div class="travel-card">
+      <div class="travel-icon">&#9992;</div>
+      <div class="travel-main">
+        <div class="travel-route">Newark (EWR) &rarr; Lisbon (LIS)</div>
+        <div class="travel-detail">Wednesday Apr 8 &nbsp;&middot;&nbsp; United Airlines UA 64 &nbsp;&middot;&nbsp; Polaris Business &nbsp;&middot;&nbsp; Overnight</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">8:25 PM &rarr; 8:20 AM</div>
+        <div class="travel-code">Conf: AGTEMK</div>
+      </div>
+    </div>
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 8</div>
+        <div class="day-date-block">
+          <div class="day-weekday">Wednesday &mdash; Departure day</div>
+          <div class="day-full-date">Home &rarr; EWR &rarr; overnight flight</div>
+        </div>
+        <div class="day-focus">International departure</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day1">
+        <div class="schedule-row" data-id="r1"><div class="sched-time">3:30 PM
+        <button class="add-row-btn" onclick="addRow('day1',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:#5F5E5A"></div><div class="sched-content"><div class="sched-name">Depart home <span class="tag tag-travel">Travel</span></div><div class="sched-detail">Leave 40 Pemberton Lane by Lyft/Uber to EWR</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r1',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r1',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r2"><div class="sched-time">4:15 PM</div><div class="sched-dot" style="background:#5F5E5A"></div><div class="sched-content"><div class="sched-name">Arrive EWR</div><div class="sched-detail">Target curb arrival 3 hours before departure</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r2',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r2',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r3"><div class="sched-time">5:00 PM</div><div class="sched-dot" style="background:#5F5E5A"></div><div class="sched-content"><div class="sched-name">Check-in &amp; security</div><div class="sched-detail">Bag drop and security at Terminal C</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r3',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r3',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r4"><div class="sched-time">6:00 PM</div><div class="sched-dot" style="background:#c8793a"></div><div class="sched-content"><div class="sched-name">Dinner <span class="tag tag-dining">Dining</span></div><div class="sched-detail">United Polaris Lounge, Terminal C</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r4',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r4',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r5"><div class="sched-time">8:25 PM</div><div class="sched-dot" style="background:#5F5E5A"></div><div class="sched-content"><div class="sched-name">UA 64 departs <span class="tag tag-travel">Flight</span></div><div class="sched-detail">Newark &rarr; Lisbon &nbsp;&middot;&nbsp; Conf: AGTEMK</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r5',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r5',event)">Delete</button></div></div>
+        <div class="day-note">Keep passports, chargers, medications, and one overnight change of clothes in carry-on. Sleep on the plane.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LISBON ══ -->
+  <div class="city-section" id="lisbon">
+    <div class="city-header">
+      <div class="city-color-bar" style="background:var(--lisbon)"></div>
+      <div class="city-header-text">
+        <div class="city-name">Lisbon</div>
+        <div class="city-dates">Thursday Apr 9 &ndash; Monday Apr 13 &nbsp;&middot;&nbsp; 4 nights</div>
+        <div class="city-hotel">The Ivens, Autograph Collection &nbsp;&middot;&nbsp; Conf #90934178</div>
+      </div>
+    </div>
+
+    <!-- Apr 9 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 9</div>
+        <div class="day-date-block"><div class="day-weekday">Thursday &mdash; Arrival day</div><div class="day-full-date">Light recovery &nbsp;&middot;&nbsp; Chiado orientation</div></div>
+        <div class="day-focus">Settle in</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day2">
+        <div class="schedule-row" data-id="r6"><div class="sched-time">8:20 AM
+        <button class="add-row-btn" onclick="addRow('day2',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Arrive Lisbon <span class="tag tag-travel">Flight</span></div><div class="sched-detail">Land at LIS &nbsp;&middot;&nbsp; Taxi to The Ivens</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r6',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r6',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r7"><div class="sched-time">9:15 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Check in / bag drop</div><div class="sched-detail">Check in if available, or store luggage and refresh</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r7',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r7',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r8"><div class="sched-time">Late morning</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Chiado orientation walk</div><div class="sched-detail">Praça Luís de Camões &rarr; Rua Garrett &rarr; Largo do Carmo &rarr; Santa Justa area</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r8',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r8',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r9"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Flexible recovery time</div><div class="sched-detail">Light meal, coffee, slow sightseeing</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r9',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r9',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r10"><div class="sched-time">Evening</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Dinner near hotel <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Hotel restaurant at The Ivens &nbsp;&middot;&nbsp; Backup: Pois Café</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r10',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r10',event)">Delete</button></div></div>
+        <div class="day-note">Do not overbook the first day. Protect the next two full walking days.</div>
+      </div>
+    </div>
+
+    <!-- Apr 10 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 10</div>
+        <div class="day-date-block"><div class="day-weekday">Friday &mdash; Alfama &amp; castle day</div><div class="day-full-date">São Jorge Castle &nbsp;&middot;&nbsp; SUD Lisboa dinner</div></div>
+        <div class="day-focus">Strong walking day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day3">
+        <div class="schedule-row" data-id="r11"><div class="sched-time">9:00 AM
+        <button class="add-row-btn" onclick="addRow('day3',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Alfama walking start <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Explore Alfama's narrow historic lanes</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r11',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r11',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r12"><div class="sched-time">10:30 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Miradouro de Santa Luzia <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Terrace overlook and photo stop</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r12',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r12',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r13"><div class="sched-time">11:15 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">São Jorge Castle <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Panoramic views over Lisbon</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r13',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r13',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r14"><div class="sched-time">1:30 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Lunch in Alfama <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Pois Café, Restaurante O Pitéu, or Antù Alfama</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r14',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r14',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r15"><div class="sched-time">5:30 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Rooftop cocktails <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">Park Bar or Topo Chiado</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r15',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r15',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r16"><div class="sched-time">7:30 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">SUD Lisboa Terrazza <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner reservation</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r16',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r16',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r17"><div class="sched-time">9:30 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Red Frog Speakeasy <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">Reserve if possible</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r17',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r17',event)">Delete</button></div></div>
+        <div class="day-note">Lisbon is the hilliest city on the trip. Strategic Uber use is acceptable if the morning climb is enough.</div>
+      </div>
+    </div>
+
+    <!-- Apr 11 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 11</div>
+        <div class="day-date-block"><div class="day-weekday">Saturday &mdash; Belém monuments day</div><div class="day-full-date">Jerónimos Monastery &nbsp;&middot;&nbsp; O Faia dinner</div></div>
+        <div class="day-focus">Moderate walking</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day4">
+        <div class="schedule-row" data-id="r18"><div class="sched-time">8:15 AM
+        <button class="add-row-btn" onclick="addRow('day4',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Depart for Belém <span class="tag tag-travel">Taxi</span></div><div class="sched-detail">Taxi to Belém to protect walking energy</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r18',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r18',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r19"><div class="sched-time">9:00 AM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Jerónimos Monastery <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Timed entry</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r19',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r19',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r20"><div class="sched-time">10:30 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Belém Tower <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Exterior visit</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r20',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r20',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r21"><div class="sched-time">11:00 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Pastéis de Belém <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Original pastel de nata bakery</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r21',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r21',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r22"><div class="sched-time">1:00 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Lunch in Belém <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Riverside or Belém-area lunch</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r22',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r22',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r23"><div class="sched-time">3:30 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Riverside walk</div><div class="sched-detail">Easy waterfront stroll &nbsp;&middot;&nbsp; Taxi back before dinner</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r23',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r23',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r24"><div class="sched-time">8:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">O Faia <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner &nbsp;&middot;&nbsp; Traditional fado restaurant</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r24',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r24',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 12 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 12</div>
+        <div class="day-date-block"><div class="day-weekday">Sunday &mdash; Chiado &amp; Bairro Alto</div><div class="day-full-date">Carmo Convent &nbsp;&middot;&nbsp; Sala de Corte dinner</div></div>
+        <div class="day-focus">Historic walking route</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day5">
+        <div class="schedule-row" data-id="r25"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day5',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Walking route begins <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Start at Praça Luís de Camões</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r25',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r25',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r26"><div class="sched-time">11:30 AM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Livraria Bertrand <span class="tag tag-activity">Activity</span></div><div class="sched-detail">World's oldest operating bookstore</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r26',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r26',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r27"><div class="sched-time">Midday</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Carmo Convent &amp; Santa Justa <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Igreja da Encarnação &rarr; Largo do Carmo &rarr; Santa Justa viewpoint</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r27',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r27',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r28"><div class="sched-time">1:00 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Time Out Market <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Lunch</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r28',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r28',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r29"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Bairro Alto route <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Church of São Roque &rarr; Miradouro de São Pedro de Alcântara &rarr; optional Elevador da Bica</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r29',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r29',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r30"><div class="sched-time">5:30 PM</div><div class="sched-dot" style="background:var(--lisbon)"></div><div class="sched-content"><div class="sched-name">Park Rooftop Bar <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">Rooftop drinks</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r30',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r30',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r31"><div class="sched-time">7:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Sala de Corte <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner &nbsp;&middot;&nbsp; Steakhouse &nbsp;&middot;&nbsp; Coffee backup: Café A Brasileira</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r31',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r31',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Lisbon → Seville -->
+    <div class="travel-card">
+      <div class="travel-icon">&#9992;</div>
+      <div class="travel-main">
+        <div class="travel-route">Lisbon (LIS) &rarr; Seville (SVQ)</div>
+        <div class="travel-detail">Monday Apr 13 &nbsp;&middot;&nbsp; TAP Air Portugal TP 1104 &nbsp;&middot;&nbsp; Checked bag + hand bag included</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">1:05 PM &rarr; 3:05 PM</div>
+        <div class="travel-code">Booking: YUHL7A</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEVILLE ══ -->
+  <div class="city-section" id="seville">
+    <div class="city-header">
+      <div class="city-color-bar" style="background:var(--seville)"></div>
+      <div class="city-header-text">
+        <div class="city-name">Seville</div>
+        <div class="city-dates">Monday Apr 13 &ndash; Thursday Apr 16 &nbsp;&middot;&nbsp; 3 nights</div>
+        <div class="city-hotel">Hotel Alfonso XIII, Luxury Collection &nbsp;&middot;&nbsp; Conf #90954648</div>
+      </div>
+    </div>
+
+    <!-- Apr 13 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 13</div>
+        <div class="day-date-block"><div class="day-weekday">Monday &mdash; Arrival day</div><div class="day-full-date">Flight from Lisbon &nbsp;&middot;&nbsp; Easy first evening</div></div>
+        <div class="day-focus">Preserve energy</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day6">
+        <div class="schedule-row" data-id="r32"><div class="sched-time">Morning
+        <button class="add-row-btn" onclick="addRow('day6',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Hotel checkout &amp; airport</div><div class="sched-detail">Easy start &nbsp;&middot;&nbsp; Leave hotel 10:30–10:45 AM for LIS</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r32',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r32',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r33"><div class="sched-time">3:05 PM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Arrive Seville <span class="tag tag-travel">Flight</span></div><div class="sched-detail">Taxi to Hotel Alfonso XIII</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r33',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r33',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r34"><div class="sched-time">Late afternoon</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Check in &amp; short walk</div><div class="sched-detail">Orientation walk near hotel only</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r34',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r34',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r35"><div class="sched-time">Evening</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Dinner open <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Hotel restaurant, Casa Morales, Bodega Santa Cruz, or El Rinconcillo</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r35',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r35',event)">Delete</button></div></div>
+        <div class="day-note">Preserve energy for the major Alcázar / Cathedral day tomorrow.</div>
+      </div>
+    </div>
+
+    <!-- Apr 14 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 14</div>
+        <div class="day-date-block"><div class="day-weekday">Tuesday &mdash; Alcázar day</div><div class="day-full-date">Cathedral &nbsp;&middot;&nbsp; Giralda &nbsp;&middot;&nbsp; Flamenco show</div></div>
+        <div class="day-focus">Full day of monuments</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day7">
+        <div class="schedule-row" data-id="r36"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day7',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Real Alcázar <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Reserved entry</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r36',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r36',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r37"><div class="sched-time">11:30 AM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Seville Cathedral <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Reserved entry</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r37',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r37',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r38"><div class="sched-time">12:30 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">La Giralda Climb <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Reserved entry</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r38',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r38',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r39"><div class="sched-time">1:00 PM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Lunch <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Casa Morales, Bodega Santa Cruz, or Las Columnas</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r39',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r39',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r40"><div class="sched-time">3:00 PM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Santa Cruz wander <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Stroll through the former Jewish Quarter</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r40',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r40',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r41"><div class="sched-time">6:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Tablao El Arenal <span class="tag tag-show">Show</span><span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Flamenco show</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r41',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r41',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 15 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 15</div>
+        <div class="day-date-block"><div class="day-weekday">Wednesday &mdash; Plaza de España &amp; María Luisa Park</div><div class="day-full-date">Riverfront &nbsp;&middot;&nbsp; Rio Grande dinner</div></div>
+        <div class="day-focus">Visually rich, flat day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day8">
+        <div class="schedule-row" data-id="r42"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day8',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Plaza de España <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Main architectural visit</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r42',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r42',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r43"><div class="sched-time">10:30 AM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">María Luisa Park <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Aníbal González Monument &rarr; Monte Gurugú &rarr; Isleta de los Patos &rarr; Glorieta de Bécquer &rarr; Plaza de América &rarr; Estanque de los Lotos</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r43',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r43',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r44"><div class="sched-time">1:30 PM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Lunch <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Triana or park-adjacent flexible lunch &nbsp;&middot;&nbsp; Backups: Blanca Paloma, Bar Triana, Las Golondrinas</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r44',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r44',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r45"><div class="sched-time">6:30 PM</div><div class="sched-dot" style="background:var(--seville)"></div><div class="sched-content"><div class="sched-name">Riverside drinks <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">EME, Atico Sevilla, Terraza Fulton, Level 5th, or Muelle de Nueva York</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r45',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r45',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r46"><div class="sched-time">8:15 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Rio Grande Restaurant <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r46',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r46',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Seville → Madrid -->
+    <div class="travel-card">
+      <div class="travel-icon">&#128646;</div>
+      <div class="travel-main">
+        <div class="travel-route">Seville Santa Justa &rarr; Madrid Atocha</div>
+        <div class="travel-detail">Thursday Apr 16 &nbsp;&middot;&nbsp; Direct AVE high-speed train &nbsp;&middot;&nbsp; ~2h 30m &nbsp;&middot;&nbsp; Budget EUR 25–70 pp</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">~10:30 AM &rarr; ~1:10 PM</div>
+        <div class="travel-code">Book direct</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MADRID ══ -->
+  <div class="city-section" id="madrid">
+    <div class="city-header">
+      <div class="city-color-bar" style="background:var(--madrid)"></div>
+      <div class="city-header-text">
+        <div class="city-name">Madrid</div>
+        <div class="city-dates">Thursday Apr 16 &ndash; Sunday Apr 19 &nbsp;&middot;&nbsp; 3 nights</div>
+        <div class="city-hotel">The Palace, a Luxury Collection Hotel</div>
+      </div>
+    </div>
+
+    <!-- Apr 16 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 16</div>
+        <div class="day-date-block"><div class="day-weekday">Thursday &mdash; Rail day &amp; arrival</div><div class="day-full-date">Seville &rarr; Madrid by train &nbsp;&middot;&nbsp; Settle in</div></div>
+        <div class="day-focus">Travel day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day9">
+        <div class="schedule-row" data-id="r47"><div class="sched-time">8:30 AM
+        <button class="add-row-btn" onclick="addRow('day9',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Checkout &amp; breakfast</div><div class="sched-detail">Leave Seville without rushing</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r47',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r47',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r48"><div class="sched-time">9:45 AM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Taxi to Sevilla Santa Justa <span class="tag tag-travel">Travel</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r48',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r48',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r49"><div class="sched-time">~10:30 AM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Direct AVE train <span class="tag tag-travel">Train</span></div><div class="sched-detail">Seville Santa Justa &rarr; Madrid Atocha</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r49',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r49',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r50"><div class="sched-time">~1:10 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Arrive Madrid</div><div class="sched-detail">Taxi from Atocha to The Palace Madrid</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r50',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r50',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r51"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Check in / short walk</div><div class="sched-detail">Stay close to hotel and museum district</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r51',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r51',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r52"><div class="sched-time">Evening</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Dinner open <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Hotel or nearby</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r52',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r52',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 17 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 17</div>
+        <div class="day-date-block"><div class="day-weekday">Friday &mdash; Prado &amp; Retiro</div><div class="day-full-date">Prado Museum &nbsp;&middot;&nbsp; Sobrino de Botín dinner</div></div>
+        <div class="day-focus">Museums &amp; park</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day10">
+        <div class="schedule-row" data-id="r53"><div class="sched-time">10:00 AM
+        <button class="add-row-btn" onclick="addRow('day10',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Prado Museum <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Reserved entry</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r53',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r53',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r54"><div class="sched-time">12:00 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Lunch <span class="tag tag-dining">Dining</span></div><div class="sched-detail">El 17 de Moreto, Brisket Restaurante, or Tinto y Tapas Príncipe</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r54',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r54',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r55"><div class="sched-time">2:00 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Retiro Park &amp; Crystal Palace <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r55',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r55',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r56"><div class="sched-time">5:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Sobrino de Botín <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner &nbsp;&middot;&nbsp; World's oldest restaurant</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r56',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r56',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r57"><div class="sched-time">8:00 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Cocktail options <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">Salmon Guru, 27 Club, Viva Madrid, or La Santoria</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r57',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r57',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 18 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 18</div>
+        <div class="day-date-block"><div class="day-weekday">Saturday &mdash; Historic core</div><div class="day-full-date">Royal Palace &nbsp;&middot;&nbsp; Plaza Mayor &nbsp;&middot;&nbsp; San Ginés</div></div>
+        <div class="day-focus">Compact historic routing</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day11">
+        <div class="schedule-row" data-id="r58"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day11',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Royal Palace &amp; Almudena Cathedral <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r58',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r58',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r59"><div class="sched-time">10:30 AM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Plaza Mayor &amp; Puerta del Sol <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r59',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r59',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r60"><div class="sched-time">12:30 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Mercado de San Miguel <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Lunch</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r60',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r60',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r61"><div class="sched-time">1:30 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Chocolatería San Ginés <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Churros con chocolate</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r61',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r61',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r62"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Plaza de Oriente stroll <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r62',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r62',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r63"><div class="sched-time">8:00 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Dinner open <span class="tag tag-dining">Dining</span></div><div class="sched-detail">La Castela, Taberna El Sur, or Taberna El Sur de Huertas</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r63',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r63',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r64"><div class="sched-time">9:30 PM</div><div class="sched-dot" style="background:var(--madrid)"></div><div class="sched-content"><div class="sched-name">Rooftop drinks <span class="tag tag-dining">Cocktails</span></div><div class="sched-detail">Azotea del Círculo or NH Collection Madrid Suecia</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r64',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r64',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Madrid → Valencia -->
+    <div class="travel-card">
+      <div class="travel-icon">&#128646;</div>
+      <div class="travel-main">
+        <div class="travel-route">Madrid Atocha &rarr; Valencia Joaquín Sorolla</div>
+        <div class="travel-detail">Sunday Apr 19 &nbsp;&middot;&nbsp; Direct AVE high-speed train &nbsp;&middot;&nbsp; ~1h 55m &nbsp;&middot;&nbsp; Budget EUR 20–60 pp</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">~10:30 AM &rarr; ~12:25 PM</div>
+        <div class="travel-code">Book direct</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VALENCIA ══ -->
+  <div class="city-section" id="valencia">
+    <div class="city-header">
+      <div class="city-color-bar" style="background:var(--valencia)"></div>
+      <div class="city-header-text">
+        <div class="city-name">Valencia</div>
+        <div class="city-dates">Sunday Apr 19 &ndash; Wednesday Apr 22 &nbsp;&middot;&nbsp; 3 nights</div>
+        <div class="city-hotel">Las Arenas Balneario Resort &nbsp;&middot;&nbsp; Res #25072859963</div>
+      </div>
+    </div>
+
+    <!-- Apr 19 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 19</div>
+        <div class="day-date-block"><div class="day-weekday">Sunday &mdash; Rail day &amp; arrival</div><div class="day-full-date">Madrid &rarr; Valencia &nbsp;&middot;&nbsp; Beach arrival</div></div>
+        <div class="day-focus">Intentionally light</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day12">
+        <div class="schedule-row" data-id="r65"><div class="sched-time">8:45 AM
+        <button class="add-row-btn" onclick="addRow('day12',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Checkout &amp; breakfast</div><div class="sched-detail">Leave Madrid on a comfortable schedule</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r65',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r65',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r66"><div class="sched-time">9:45 AM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Taxi to Madrid Atocha <span class="tag tag-travel">Travel</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r66',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r66',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r67"><div class="sched-time">~10:30 AM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Direct AVE train <span class="tag tag-travel">Train</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r67',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r67',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r68"><div class="sched-time">~12:25 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Arrive Valencia</div><div class="sched-detail">Taxi to Las Arenas Balneario Resort</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r68',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r68',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r69"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Check in / beach reset</div><div class="sched-detail">Protect time for a slow arrival</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r69',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r69',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r70"><div class="sched-time">Evening</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Dinner open <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Hotel or nearby on the promenade</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r70',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r70',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 20 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 20</div>
+        <div class="day-date-block"><div class="day-weekday">Monday &mdash; Old Town &amp; paella day</div><div class="day-full-date">Valencia Cathedral &nbsp;&middot;&nbsp; La Pepica dinner</div></div>
+        <div class="day-focus">Old town + waterfront</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day13">
+        <div class="schedule-row" data-id="r71"><div class="sched-time">10:30 AM
+        <button class="add-row-btn" onclick="addRow('day13',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Valencia Cathedral <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Holy Grail visit &nbsp;&middot;&nbsp; No reservation required &nbsp;&middot;&nbsp; Taxi into old town</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r71',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r71',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r72"><div class="sched-time">12:00 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Central Market <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Food hall and browsing</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r72',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r72',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r73"><div class="sched-time">2:00 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Plaza de la Virgen <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Old town pause and photos</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r73',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r73',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r74"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Return / refresh</div><div class="sched-detail">Head back toward hotel before dinner &nbsp;&middot;&nbsp; Taxi if desired</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r74',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r74',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r75"><div class="sched-time">7:30 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">La Pepica <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner &nbsp;&middot;&nbsp; Classic Valencian paella</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r75',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r75',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r76"><div class="sched-time">10:00 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Atenea Sky <span class="tag tag-dining">Cocktails</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r76',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r76',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 21 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 21</div>
+        <div class="day-date-block"><div class="day-weekday">Tuesday &mdash; Turia, waterfront &amp; spa</div><div class="day-full-date">City of Arts &amp; Sciences &nbsp;&middot;&nbsp; Spa Las Arenas</div></div>
+        <div class="day-focus">Restorative day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day14">
+        <div class="schedule-row" data-id="r77"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day14',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Turia Gardens walk <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Easy greenway walk</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r77',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r77',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r78"><div class="sched-time">11:00 AM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">City of Arts &amp; Sciences <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r78',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r78',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r79"><div class="sched-time">12:30 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Destino Puerto <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Lunch at the marina</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r79',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r79',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r80"><div class="sched-time">2:00 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Spa at Las Arenas <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Balneario Resort spa block — protect this time</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r80',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r80',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r81"><div class="sched-time">6:00 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Evening beach promenade stroll <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r81',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r81',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r82"><div class="sched-time">7:30 PM</div><div class="sched-dot" style="background:var(--valencia)"></div><div class="sched-content"><div class="sched-name">Casual beachfront dinner <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Boa Beach, La Más Bonita, or La Fabrica de Hielo</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r82',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r82',event)">Delete</button></div></div>
+        <div class="day-note">Intentionally restorative. Avoid over-scheduling. Protect the spa block.</div>
+      </div>
+    </div>
+
+    <!-- Valencia → Barcelona -->
+    <div class="travel-card">
+      <div class="travel-icon">&#128646;</div>
+      <div class="travel-main">
+        <div class="travel-route">Valencia Joaquín Sorolla &rarr; Barcelona Sants</div>
+        <div class="travel-detail">Wednesday Apr 22 &nbsp;&middot;&nbsp; Direct Euromed train &nbsp;&middot;&nbsp; ~3h 15m &nbsp;&middot;&nbsp; Budget EUR 30–90 pp</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">~9:15 AM &rarr; ~12:30 PM</div>
+        <div class="travel-code">Book direct</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BARCELONA ══ -->
+  <div class="city-section" id="barcelona">
+    <div class="city-header">
+      <div class="city-color-bar" style="background:var(--barcelona)"></div>
+      <div class="city-header-text">
+        <div class="city-name">Barcelona</div>
+        <div class="city-dates">Wednesday Apr 22 &ndash; Saturday Apr 25 &nbsp;&middot;&nbsp; 3 nights</div>
+        <div class="city-hotel">Cotton House Hotel, Autograph Collection &nbsp;&middot;&nbsp; Conf #89578107</div>
+      </div>
+    </div>
+
+    <!-- Apr 22 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 22</div>
+        <div class="day-date-block"><div class="day-weekday">Wednesday &mdash; Rail day &amp; arrival</div><div class="day-full-date">Valencia &rarr; Barcelona &nbsp;&middot;&nbsp; Eixample arrival</div></div>
+        <div class="day-focus">Light first day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day15">
+        <div class="schedule-row" data-id="r83"><div class="sched-time">7:45 AM
+        <button class="add-row-btn" onclick="addRow('day15',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Checkout &amp; breakfast</div><div class="sched-detail">Early but not rushed departure</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r83',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r83',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r84"><div class="sched-time">8:30 AM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Taxi to Valencia station <span class="tag tag-travel">Travel</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r84',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r84',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r85"><div class="sched-time">~9:15 AM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Euromed direct train <span class="tag tag-travel">Train</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r85',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r85',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r86"><div class="sched-time">~12:30 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Arrive Barcelona</div><div class="sched-detail">Taxi to Cotton House Hotel</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r86',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r86',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r87"><div class="sched-time">Afternoon</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Check in / orientation walk</div><div class="sched-detail">Keep the first Barcelona day light</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r87',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r87',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r88"><div class="sched-time">Evening</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Dinner open <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Hotel or nearby &nbsp;&middot;&nbsp; Backups: Vinitus, El Nacional, Alsur Café</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r88',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r88',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Apr 23 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 23</div>
+        <div class="day-date-block"><div class="day-weekday">Thursday &mdash; Gaudí masterpieces</div><div class="day-full-date">Park Güell &nbsp;&middot;&nbsp; Sagrada Família &nbsp;&middot;&nbsp; La Pedrera night</div></div>
+        <div class="day-focus">Densest Barcelona day</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day16">
+        <div class="schedule-row" data-id="r89"><div class="sched-time">9:30 AM
+        <button class="add-row-btn" onclick="addRow('day16',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Park Güell <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div><div class="sched-detail">Taxi from hotel</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r89',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r89',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r90"><div class="sched-time">12:00 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">El Nacional <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Lunch</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r90',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r90',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r91"><div class="sched-time">1:30 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">MUHBA Roman ruins <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Historic interlude in the Gothic core</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r91',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r91',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r92"><div class="sched-time">3:45 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Sagrada Família <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Reserved</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r92',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r92',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r93"><div class="sched-time">7:00 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Dinner <span class="tag tag-dining">Dining</span></div><div class="sched-detail">Near La Pedrera &nbsp;&middot;&nbsp; Vinitus, Sintonia, or hotel restaurant</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r93',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r93',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r94"><div class="sched-time">9:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">La Pedrera evening visit <span class="tag tag-activity">Activity</span><span class="tag tag-confirmed">Planned reserved</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r94',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r94',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r95"><div class="sched-time">10:00 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Paradiso <span class="tag tag-dining">Cocktails</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r95',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r95',event)">Delete</button></div></div>
+        <div class="day-note">Densest day of the trip. Keep transport practical — especially taxi to Park Güell.</div>
+      </div>
+    </div>
+
+    <!-- Apr 24 -->
+    <div class="day-card">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">Apr 24</div>
+        <div class="day-date-block"><div class="day-weekday">Friday &mdash; Gothic Quarter &amp; final Barcelona day</div><div class="day-full-date">Casa Batlló &nbsp;&middot;&nbsp; Els 4 Gats lunch &nbsp;&middot;&nbsp; La Pepita dinner</div></div>
+        <div class="day-focus">Las Ramblas &amp; Gothic</div>
+        <div class="day-chevron">&#9660;</div>
+      </div>
+      <div class="day-body" data-day-id="day17">
+        <div class="schedule-row" data-id="r96"><div class="sched-time">9:00 AM
+        <button class="add-row-btn" onclick="addRow('day17',event)">+ Add item to this day</button>
+      </div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Casa Batlló <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Morning visit / audio rooftop</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r96',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r96',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r97"><div class="sched-time">11:30 AM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Chocolate Museum or La Pedrera <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Pair with second reserved site depending on final ticketing</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r97',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r97',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r98"><div class="sched-time">1:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">Els 4 Gats <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Lunch &nbsp;&middot;&nbsp; Historic Modernista café &nbsp;&middot;&nbsp; Picasso's old haunt</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r98',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r98',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r99"><div class="sched-time">2:30 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Gothic Quarter exploration <span class="tag tag-activity">Activity</span></div><div class="sched-detail">Plaça del Rei &nbsp;&middot;&nbsp; Temple of Augustus &nbsp;&middot;&nbsp; Via Sepulcral Romana</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r99',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r99',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r100"><div class="sched-time">6:00 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Las Ramblas walk <span class="tag tag-activity">Activity</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r100',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r100',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r101"><div class="sched-time">7:00 PM</div><div class="sched-dot" style="background:#1D9E75"></div><div class="sched-content"><div class="sched-name">La Pepita <span class="tag tag-confirmed">Confirmed</span></div><div class="sched-detail">Dinner &nbsp;&middot;&nbsp; Final evening in Barcelona</div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r101',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r101',event)">Delete</button></div></div>
+        <div class="schedule-row" data-id="r102"><div class="sched-time">9:00 PM</div><div class="sched-dot" style="background:var(--barcelona)"></div><div class="sched-content"><div class="sched-name">Dr. Stravinsky <span class="tag tag-dining">Cocktails</span></div></div><div class="row-actions"><button class="row-btn" onclick="editRow('r102',event)">Edit</button><button class="row-btn del" onclick="deleteRow('r102',event)">Delete</button></div></div>
+      </div>
+    </div>
+
+    <!-- Return flight -->
+    <div class="travel-card">
+      <div class="travel-icon">&#9992;</div>
+      <div class="travel-main">
+        <div class="travel-route">Barcelona (BCN) &rarr; Newark (EWR)</div>
+        <div class="travel-detail">Saturday Apr 25 &nbsp;&middot;&nbsp; United Airlines UA 121 &nbsp;&middot;&nbsp; United Premium Plus &nbsp;&middot;&nbsp; Depart Cotton House ~8:30 AM</div>
+      </div>
+      <div class="travel-meta">
+        <div class="travel-time">12:00 PM &rarr; 3:00 PM</div>
+        <div class="travel-code">Conf: AGTEMK &nbsp;&middot;&nbsp; Eddie pick-up at EWR</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+
+
+<!-- ── Edit Modal ── -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modal-title">Edit item</div>
+    <div class="modal-field">
+      <label class="modal-label">Time</label>
+      <input class="modal-input" id="modal-time" type="text" placeholder="e.g. 9:00 AM, Afternoon, Evening"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Activity / name</label>
+      <input class="modal-input" id="modal-name" type="text" placeholder="What are you doing?"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Details <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+      <textarea class="modal-textarea" id="modal-detail" placeholder="Notes, backup options, reminders..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Type</label>
+      <select class="modal-select" id="modal-type">
+        <option value="">None</option>
+        <option value="dining">Dining</option>
+        <option value="activity">Activity</option>
+        <option value="show">Show</option>
+        <option value="travel">Travel</option>
+        <option value="confirmed">Confirmed</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn danger" id="modal-delete-btn" onclick="confirmDelete()" style="display:none">Delete</button>
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ State ══ */
+var STORAGE_KEY = "pt-es-2026-itinerary";
+var editState   = {};   /* {rowId: {time, name, detail, type}} */
+var customRows  = {};   /* {dayId: [{id, time, name, detail, type}]} */
+var deletedRows = {};   /* {rowId: true} */
+
+var modalMode   = null; /* "edit" | "add" */
+var modalTarget = null; /* rowId or dayId */
+
+/* ── Persistence ── */
+function loadState() {
+  try {
+    var s = localStorage.getItem(STORAGE_KEY);
+    if (!s) return;
+    var d = JSON.parse(s);
+    editState   = d.editState   || {};
+    customRows  = d.customRows  || {};
+    deletedRows = d.deletedRows || {};
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      editState: editState,
+      customRows: customRows,
+      deletedRows: deletedRows
+    }));
+  } catch(e) {}
+}
+
+/* ── Apply saved state on load ── */
+function applyState() {
+  /* Apply deletions */
+  for (var id in deletedRows) {
+    var el = document.querySelector('[data-id="' + id + '"]');
+    if (el) el.classList.add('deleted-row');
+  }
+  /* Apply edits */
+  for (var rid in editState) {
+    applyEditToRow(rid, editState[rid]);
+  }
+  /* Render custom rows */
+  for (var dayId in customRows) {
+    var items = customRows[dayId];
+    for (var i = 0; i < items.length; i++) {
+      renderCustomRow(dayId, items[i]);
+    }
+  }
+}
+
+function applyEditToRow(rowId, data) {
+  var row = document.querySelector('[data-id="' + rowId + '"]');
+  if (!row) return;
+  var timeEl   = row.querySelector('.sched-time');
+  var nameEl   = row.querySelector('.sched-name');
+  var detailEl = row.querySelector('.sched-detail');
+  if (timeEl)   timeEl.textContent = data.time || '';
+  if (nameEl) {
+    /* Preserve action buttons */
+    var actions = nameEl.parentElement.querySelector('.row-actions');
+    var nameNode = document.createTextNode(data.name || '');
+    nameEl.innerHTML = '';
+    nameEl.appendChild(nameNode);
+    if (data.type) {
+      var tag = document.createElement('span');
+      tag.className = 'tag tag-' + data.type;
+      tag.textContent = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+      nameEl.appendChild(tag);
+    }
+    /* Mark as edited */
+    if (!row.querySelector('.edit-badge')) {
+      var badge = document.createElement('span');
+      badge.className = 'tag custom-badge edit-badge';
+      badge.textContent = 'Edited';
+      nameEl.appendChild(badge);
+    }
+  }
+  if (detailEl) detailEl.textContent = data.detail || '';
+  else if (data.detail) {
+    var newDetail = document.createElement('div');
+    newDetail.className = 'sched-detail';
+    newDetail.textContent = data.detail;
+    var content = row.querySelector('.sched-content');
+    if (content) content.appendChild(newDetail);
+  }
+}
+
+function renderCustomRow(dayId, item) {
+  var dayBody = document.querySelector('[data-day-id="' + dayId + '"]');
+  if (!dayBody) return;
+  var addBtn = dayBody.querySelector('.add-row-btn');
+
+  var dot = '#9b9489';
+  if (item.type === 'dining' || item.type === 'confirmed') dot = '#1D9E75';
+
+  var row = document.createElement('div');
+  row.className = 'schedule-row custom-row';
+  row.setAttribute('data-id', item.id);
+  row.setAttribute('data-custom', '1');
+
+  var tagHTML = item.type ? '<span class="tag tag-' + item.type + '">' + item.type.charAt(0).toUpperCase() + item.type.slice(1) + '</span>' : '';
+  tagHTML += '<span class="tag custom-badge">Custom</span>';
+
+  row.innerHTML =
+    '<div class="sched-time">' + esc(item.time) + '</div>' +
+    '<div class="sched-dot" style="background:' + dot + '"></div>' +
+    '<div class="sched-content">' +
+      '<div class="sched-name">' + esc(item.name) + tagHTML + '</div>' +
+      (item.detail ? '<div class="sched-detail">' + esc(item.detail) + '</div>' : '') +
+    '</div>' +
+    '<div class="row-actions">' +
+      '<button class="row-btn" onclick="editRow('' + item.id + '',event)">Edit</button>' +
+      '<button class="row-btn del" onclick="deleteRow('' + item.id + '',event)">Delete</button>' +
+    '</div>';
+
+  if (addBtn) dayBody.insertBefore(row, addBtn);
+  else dayBody.appendChild(row);
+}
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
+}
+
+/* ── Edit mode toggle ── */
+function toggleEditMode() {
+  document.body.classList.toggle('edit-mode');
+  var btn = document.getElementById('edit-toggle');
+  if (document.body.classList.contains('edit-mode')) {
+    btn.textContent = 'Done editing';
+    btn.classList.add('active');
+  } else {
+    btn.textContent = 'Edit itinerary';
+    btn.classList.remove('active');
+  }
+}
+
+/* ── Open modal ── */
+function openModal(title, time, name, detail, type, showDelete) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-time').value   = time   || '';
+  document.getElementById('modal-name').value   = name   || '';
+  document.getElementById('modal-detail').value = detail || '';
+  document.getElementById('modal-type').value   = type   || '';
+  document.getElementById('modal-delete-btn').style.display = showDelete ? 'block' : 'none';
+  document.getElementById('modal-bg').classList.add('open');
+  setTimeout(function() { document.getElementById('modal-time').focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  modalMode   = null;
+  modalTarget = null;
+}
+
+/* ── Edit existing row ── */
+function editRow(rowId, event) {
+  if (event) event.stopPropagation();
+  var row = document.querySelector('[data-id="' + rowId + '"]');
+  if (!row) return;
+
+  var isCustom = row.getAttribute('data-custom') === '1';
+  var timeEl   = row.querySelector('.sched-time');
+  var nameEl   = row.querySelector('.sched-name');
+  var detailEl = row.querySelector('.sched-detail');
+
+  /* Get clean name text without tag spans */
+  var nameClone = nameEl.cloneNode(true);
+  nameClone.querySelectorAll('span').forEach(function(s){ s.remove(); });
+  var nameText = nameClone.textContent.trim();
+
+  /* Detect current type from existing tag */
+  var tagEl = nameEl.querySelector('.tag:not(.custom-badge):not(.edit-badge)');
+  var currentType = '';
+  if (tagEl) {
+    var cls = tagEl.className.replace('tag tag-','').trim();
+    currentType = cls;
+  }
+
+  /* Check existing edit state */
+  if (editState[rowId]) {
+    nameText    = editState[rowId].name   || nameText;
+    currentType = editState[rowId].type   || currentType;
+  }
+
+  modalMode   = 'edit';
+  modalTarget = rowId;
+  openModal('Edit item',
+    (editState[rowId] && editState[rowId].time) || (timeEl ? timeEl.textContent.trim() : ''),
+    nameText,
+    (editState[rowId] && editState[rowId].detail) || (detailEl ? detailEl.textContent.trim() : ''),
+    currentType,
+    isCustom
+  );
+}
+
+/* ── Add new row ── */
+function addRow(dayId, event) {
+  if (event) event.stopPropagation();
+  modalMode   = 'add';
+  modalTarget = dayId;
+  openModal('Add item', '', '', '', '', false);
+}
+
+/* ── Save modal ── */
+function saveModal() {
+  var time   = document.getElementById('modal-time').value.trim();
+  var name   = document.getElementById('modal-name').value.trim();
+  var detail = document.getElementById('modal-detail').value.trim();
+  var type   = document.getElementById('modal-type').value;
+
+  if (!name) { document.getElementById('modal-name').focus(); return; }
+
+  if (modalMode === 'edit') {
+    var rowId = modalTarget;
+    editState[rowId] = { time: time, name: name, detail: detail, type: type };
+    saveState();
+    applyEditToRow(rowId, editState[rowId]);
+    /* Update time separately */
+    var row = document.querySelector('[data-id="' + rowId + '"]');
+    if (row) {
+      var timeEl = row.querySelector('.sched-time');
+      if (timeEl) timeEl.textContent = time;
+    }
+    /* Update custom row data */
+    var isCustom = row && row.getAttribute('data-custom') === '1';
+    if (isCustom) {
+      for (var dayId in customRows) {
+        var arr = customRows[dayId];
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].id === rowId) {
+            arr[i].time = time; arr[i].name = name;
+            arr[i].detail = detail; arr[i].type = type;
+          }
+        }
+      }
+      saveState();
+      /* Re-render the custom row */
+      if (row) row.remove();
+      for (var dId in customRows) {
+        var arr = customRows[dId];
+        for (var j = 0; j < arr.length; j++) {
+          if (arr[j].id === rowId) { renderCustomRow(dId, arr[j]); break; }
+        }
+      }
+    }
+
+  } else if (modalMode === 'add') {
+    var dayId = modalTarget;
+    var newId = 'custom-' + Date.now();
+    var item  = { id: newId, time: time, name: name, detail: detail, type: type };
+    if (!customRows[dayId]) customRows[dayId] = [];
+    customRows[dayId].push(item);
+    saveState();
+    renderCustomRow(dayId, item);
+  }
+
+  closeModal();
+}
+
+/* ── Delete row ── */
+function deleteRow(rowId, event) {
+  if (event) event.stopPropagation();
+  var row = document.querySelector('[data-id="' + rowId + '"]');
+  if (!row) return;
+  var isCustom = row.getAttribute('data-custom') === '1';
+
+  if (isCustom) {
+    /* Remove from customRows */
+    for (var dayId in customRows) {
+      customRows[dayId] = customRows[dayId].filter(function(r){ return r.id !== rowId; });
+    }
+    row.remove();
+  } else {
+    deletedRows[rowId] = true;
+    row.classList.add('deleted-row');
+  }
+  delete editState[rowId];
+  saveState();
+  closeModal();
+}
+
+function confirmDelete() {
+  deleteRow(modalTarget, null);
+}
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && e.metaKey) saveModal();
+});
+
+/* ── Boot ── */
+loadState();
+applyState();
+
+/* ── Original toggleDay ── */
+function toggleDay(header) {
+  var body = header.nextElementSibling;
+  var isOpen = body.classList.contains("open");
+  header.classList.toggle("open", !isOpen);
+  body.classList.toggle("open", !isOpen);
+}
+
+/* auto-open today's day */
+(function() {
+  var now = new Date();
+  var today = now.getFullYear() + "-"
+    + String(now.getMonth()+1).padStart(2,"0") + "-"
+    + String(now.getDate()).padStart(2,"0");
+  var dayMap = {
+    "2026-04-08": 0, "2026-04-09": 1, "2026-04-10": 2,
+    "2026-04-11": 3, "2026-04-12": 4, "2026-04-13": 5,
+    "2026-04-14": 6, "2026-04-15": 7, "2026-04-16": 8,
+    "2026-04-17": 9, "2026-04-18": 10, "2026-04-19": 11,
+    "2026-04-20": 12, "2026-04-21": 13, "2026-04-22": 14,
+    "2026-04-23": 15, "2026-04-24": 16, "2026-04-25": 17
+  };
+  var headers = document.querySelectorAll(".day-header");
+  if (today in dayMap) {
+    var idx = dayMap[today];
+    if (headers[idx]) {
+      toggleDay(headers[idx]);
+      setTimeout(function() {
+        headers[idx].scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
