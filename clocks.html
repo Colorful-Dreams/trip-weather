@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>World Clocks</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:transparent;
+  padding:16px 16px 8px;
+}
+
+.section-label{
+  font-size:11px;font-weight:500;color:#b4b2a9;
+  text-transform:uppercase;letter-spacing:0.07em;
+  text-align:center;margin-bottom:16px;
+}
+
+.clocks-row{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.clock-card{
+  background:#fff;
+  border:0.5px solid rgba(0,0,0,0.10);
+  border-radius:14px;
+  padding:20px 16px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  width:175px;
+  flex-shrink:0;
+}
+
+.clock-card.home-card { border-top:3px solid #185FA5; }
+.clock-card.lisbon-card { border-top:3px solid #c8793a; }
+.clock-card.barcelona-card { border-top:3px solid #993556; }
+
+/* Analog clock face */
+.face-wrap{
+  position:relative;
+  width:110px;
+  height:110px;
+}
+
+canvas.clock-canvas{
+  display:block;
+  width:110px;
+  height:110px;
+}
+
+/* Digital time */
+.digital{
+  font-family:'DM Sans',sans-serif;
+  font-size:22px;
+  font-weight:500;
+  color:#1c1a17;
+  letter-spacing:-0.5px;
+  line-height:1;
+}
+
+.clock-city{
+  font-family:'Playfair Display',serif;
+  font-size:14px;
+  font-weight:400;
+  font-style:italic;
+  color:#1c1a17;
+  text-align:center;
+  line-height:1.2;
+}
+
+.clock-region{
+  font-size:11px;
+  color:#b4b2a9;
+  text-align:center;
+  margin-top:1px;
+}
+
+.tz-badge{
+  font-size:10px;
+  font-weight:500;
+  padding:2px 8px;
+  border-radius:99px;
+  background:#f5f5f3;
+  color:#888780;
+}
+
+.time-diff{
+  font-size:11px;
+  color:#888780;
+  text-align:center;
+}
+
+@media(max-width:420px){
+  .clock-card{ width:140px; }
+  .face-wrap{ width:90px; height:90px; }
+  canvas.clock-canvas{ width:90px; height:90px; }
+  .digital{ font-size:18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="section-label">Current time</div>
+
+<div class="clocks-row">
+  <div class="clock-card home-card">
+    <div class="face-wrap">
+      <canvas class="clock-canvas" id="c-home" width="220" height="220"></canvas>
+    </div>
+    <div class="digital" id="d-home">--:-- --</div>
+    <div>
+      <div class="clock-city">East Windsor</div>
+      <div class="clock-region">New Jersey, USA</div>
+    </div>
+    <div class="tz-badge" id="b-home">ET</div>
+  </div>
+
+  <div class="clock-card lisbon-card">
+    <div class="face-wrap">
+      <canvas class="clock-canvas" id="c-lisbon" width="220" height="220"></canvas>
+    </div>
+    <div class="digital" id="d-lisbon">--:-- --</div>
+    <div>
+      <div class="clock-city">Lisbon</div>
+      <div class="clock-region">Portugal</div>
+    </div>
+    <div class="tz-badge" id="b-lisbon">WET/WEST</div>
+    <div class="time-diff" id="diff-lisbon"></div>
+  </div>
+
+  <div class="clock-card barcelona-card">
+    <div class="face-wrap">
+      <canvas class="clock-canvas" id="c-barcelona" width="220" height="220"></canvas>
+    </div>
+    <div class="digital" id="d-barcelona">--:-- --</div>
+    <div>
+      <div class="clock-city">Barcelona</div>
+      <div class="clock-region">Spain</div>
+    </div>
+    <div class="tz-badge" id="b-barcelona">CET/CEST</div>
+    <div class="time-diff" id="diff-barcelona"></div>
+  </div>
+</div>
+
+<script>
+var ZONES = {
+  home:      { tz:"America/New_York",  canvasId:"c-home",      digitalId:"d-home",      badgeId:"b-home",      diffId:null,           accentColor:"#185FA5" },
+  lisbon:    { tz:"Europe/Lisbon",     canvasId:"c-lisbon",    digitalId:"d-lisbon",    badgeId:"b-lisbon",    diffId:"diff-lisbon",   accentColor:"#c8793a" },
+  barcelona: { tz:"Europe/Madrid",     canvasId:"c-barcelona", digitalId:"d-barcelona", badgeId:"b-barcelona", diffId:"diff-barcelona",accentColor:"#993556" }
+};
+
+/* Get local time parts in a given timezone */
+function getTimeParts(tz) {
+  var now = new Date();
+  var opts = { timeZone:tz, hour:"numeric", minute:"numeric", second:"numeric",
+               hour12:true, hourCycle:"h12" };
+  var parts = new Intl.DateTimeFormat("en-US", opts).formatToParts(now);
+  var obj = {};
+  parts.forEach(function(p){ obj[p.type] = p.value; });
+  var h  = parseInt(obj.hour, 10);
+  var m  = parseInt(obj.minute, 10);
+  var s  = parseInt(obj.second, 10);
+  var ap = (obj.dayPeriod || "AM").toUpperCase();
+  return { h:h, m:m, s:s, ampm:ap };
+}
+
+function getOffsetHours(tz) {
+  var now = new Date();
+  var local  = new Date(now.toLocaleString("en-US", {timeZone:"America/New_York"}));
+  var remote = new Date(now.toLocaleString("en-US", {timeZone:tz}));
+  return Math.round((remote - local) / 3600000);
+}
+
+function drawClock(canvasId, tp, accentColor) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext("2d");
+  var W = canvas.width;
+  var cx = W / 2, cy = W / 2, R = W / 2 - 6;
+
+  ctx.clearRect(0, 0, W, W);
+
+  /* Face */
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI*2);
+  ctx.fillStyle = "#faf8f4";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,0.08)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  /* Hour markers */
+  for (var i = 0; i < 12; i++) {
+    var angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+    var isMajor = (i % 3 === 0);
+    var len  = isMajor ? 12 : 7;
+    var wid  = isMajor ? 2.5 : 1.5;
+    var r1 = R - 4;
+    var r2 = r1 - len;
+    ctx.beginPath();
+    ctx.moveTo(cx + r1 * Math.cos(angle), cy + r1 * Math.sin(angle));
+    ctx.lineTo(cx + r2 * Math.cos(angle), cy + r2 * Math.sin(angle));
+    ctx.strokeStyle = isMajor ? "#5f5e5a" : "#d3d1c7";
+    ctx.lineWidth = wid;
+    ctx.lineCap = "round";
+    ctx.stroke();
+  }
+
+  var h12 = tp.h % 12;
+  var hAngle  = ((h12 + tp.m/60 + tp.s/3600) / 12) * Math.PI*2 - Math.PI/2;
+  var mAngle  = ((tp.m + tp.s/60) / 60) * Math.PI*2 - Math.PI/2;
+  var sAngle  = (tp.s / 60) * Math.PI*2 - Math.PI/2;
+
+  /* Hour hand */
+  drawHand(ctx, cx, cy, hAngle, R * 0.50, 7, "#1c1a17", "round");
+  /* Minute hand */
+  drawHand(ctx, cx, cy, mAngle, R * 0.70, 5, "#1c1a17", "round");
+  /* Second hand */
+  drawHand(ctx, cx, cy, sAngle, R * 0.80, 2, accentColor, "round");
+  /* Counter-weight on second hand */
+  drawHand(ctx, cx, cy, sAngle + Math.PI, R * 0.18, 2, accentColor, "round");
+
+  /* Center dot */
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, Math.PI*2);
+  ctx.fillStyle = "#1c1a17";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 2.5, 0, Math.PI*2);
+  ctx.fillStyle = accentColor;
+  ctx.fill();
+}
+
+function drawHand(ctx, cx, cy, angle, length, width, color, cap) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + length * Math.cos(angle), cy + length * Math.sin(angle));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = cap || "round";
+  ctx.stroke();
+  ctx.restore();
+}
+
+function pad(n){ return n < 10 ? "0" + n : String(n); }
+
+function updateClocks() {
+  for (var key in ZONES) {
+    var z = ZONES[key];
+    var tp = getTimeParts(z.tz);
+
+    /* Draw analog */
+    drawClock(z.canvasId, tp, z.accentColor);
+
+    /* Digital */
+    var dEl = document.getElementById(z.digitalId);
+    if (dEl) dEl.textContent = tp.h + ":" + pad(tp.m) + ":" + pad(tp.s) + " " + tp.ampm;
+
+    /* Timezone badge */
+    var now = new Date();
+    var bEl = document.getElementById(z.badgeId);
+    if (bEl) {
+      var shortTZ = new Intl.DateTimeFormat("en-US", {timeZone:z.tz, timeZoneName:"short"})
+        .formatToParts(now).find(function(p){ return p.type === "timeZoneName"; });
+      if (shortTZ) bEl.textContent = shortTZ.value;
+    }
+
+    /* Diff label */
+    if (z.diffId) {
+      var diff = getOffsetHours(z.tz);
+      var dEl2 = document.getElementById(z.diffId);
+      if (dEl2) {
+        if (diff === 0)       dEl2.textContent = "Same time as home";
+        else if (diff > 0)    dEl2.textContent = "+" + diff + "h ahead of home";
+        else                  dEl2.textContent = Math.abs(diff) + "h behind home";
+      }
+    }
+  }
+}
+
+updateClocks();
+setInterval(updateClocks, 1000);
+</script>
+</body>
+</html>
