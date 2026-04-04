@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Itinerary - Portugal &amp; Spain 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink:#1c1a17; --paper:#faf8f4; --card:#fff; --muted:#9b9489;
+  --rule:rgba(0,0,0,0.08); --accent:#c8793a; --accent-light:#fdf0e6;
+  --lisbon:#185FA5;    --lisbon-bg:#E6F1FB;
+  --seville:#854F0B;   --seville-bg:#FAEEDA;
+  --madrid:#534AB7;    --madrid-bg:#EEEDFE;
+  --valencia:#3B6D11;  --valencia-bg:#EAF3DE;
+  --barcelona:#993556; --barcelona-bg:#FBEAF0;
+  --travel-bg:#F1EFE8; --green:#1D9E75;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);}
+.hdr{background:var(--card);border-bottom:0.5px solid var(--rule);padding:20px 24px 16px;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.site-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.2px;}
+.site-title em{font-style:italic;color:var(--accent);}
+.site-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.hdr-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.stats{display:flex;gap:18px;}
+.stat-num{font-size:20px;font-weight:500;line-height:1;}
+.stat-label{font-size:11px;color:var(--muted);}
+.edit-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  padding:6px 14px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.15);
+  background:#fff;color:#5f5e5a;cursor:pointer;white-space:nowrap;transition:all 0.15s;}
+.edit-btn:hover{background:#f5f5f3;}
+.edit-btn.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.city-nav{display:flex;gap:6px;flex-wrap:wrap;}
+.cpill{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  padding:5px 14px;border-radius:99px;border:0.5px solid rgba(0,0,0,0.13);
+  background:var(--card);color:#5f5e5a;text-decoration:none;}
+.cpill-l{background:var(--lisbon-bg);   color:var(--lisbon);   border-color:var(--lisbon);}
+.cpill-s{background:var(--seville-bg);  color:var(--seville);  border-color:var(--seville);}
+.cpill-m{background:var(--madrid-bg);   color:var(--madrid);   border-color:var(--madrid);}
+.cpill-v{background:var(--valencia-bg); color:var(--valencia); border-color:var(--valencia);}
+.cpill-b{background:var(--barcelona-bg);color:var(--barcelona);border-color:var(--barcelona);}
+.main{padding:24px 24px 60px;max-width:860px;margin:0 auto;}
+.city-sec{margin-bottom:44px;scroll-margin-top:14px;}
+.city-hdr{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:12px;border-bottom:0.5px solid var(--rule);}
+.city-bar{width:4px;height:44px;border-radius:99px;flex-shrink:0;}
+.city-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;letter-spacing:-0.3px;}
+.city-dates{font-size:13px;color:var(--muted);margin-top:2px;}
+.city-hotel{font-size:12px;color:var(--muted);margin-top:3px;font-style:italic;}
+.tcard{background:var(--card);border:0.5px solid var(--rule);border-radius:14px;
+  padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;}
+.ticon{font-size:20px;flex-shrink:0;width:40px;height:40px;background:var(--travel-bg);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.troute{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.tdetail{font-size:12px;color:var(--muted);}
+.tmeta{text-align:right;}
+.ttime{font-size:14px;font-weight:500;color:var(--ink);}
+.tcode{font-size:11px;color:var(--muted);margin-top:2px;}
+.dcard{background:var(--card);border:0.5px solid var(--rule);border-radius:14px;margin-bottom:12px;overflow:hidden;}
+.dhdr{display:flex;align-items:center;gap:14px;padding:13px 18px;cursor:pointer;
+  user-select:none;border-bottom:0.5px solid transparent;transition:background 0.15s;}
+.dhdr:hover{background:#faf8f4;}
+.dhdr.open{border-bottom-color:var(--rule);}
+.dnum{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;min-width:38px;}
+.dtblock{flex:1;}
+.dweekday{font-size:15px;font-weight:500;color:var(--ink);}
+.dsub{font-size:12px;color:var(--muted);margin-top:1px;}
+.dfocus{font-size:12px;color:var(--muted);font-style:italic;text-align:right;max-width:200px;}
+.dchev{font-size:12px;color:var(--muted);transition:transform 0.2s;flex-shrink:0;}
+.dhdr.open .dchev{transform:rotate(180deg);}
+.dbody{display:none;padding:0 18px 14px;}
+.dbody.open{display:block;}
+.srow{display:flex;gap:12px;padding:8px 0;border-bottom:0.5px solid var(--rule);align-items:flex-start;}
+.srow:last-of-type{border-bottom:none;}
+.stime{font-size:12px;font-weight:500;color:var(--muted);min-width:68px;padding-top:1px;flex-shrink:0;text-align:right;}
+.sdot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.scont{flex:1;min-width:0;}
+.sname{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4;}
+.sdet{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px;
+  margin-left:5px;vertical-align:middle;position:relative;top:-1px;}
+.tag-dining   {background:#FAECE7;color:#993C1D;}
+.tag-activity {background:#EEEDFE;color:#534AB7;}
+.tag-show     {background:#FBEAF0;color:#993556;}
+.tag-travel   {background:#F1EFE8;color:#5F5E5A;}
+.tag-confirmed{background:#EAF3DE;color:#3B6D11;}
+.tag-custom   {background:#E6F1FB;color:#185FA5;}
+.tag-edited   {background:#FAEEDA;color:#854F0B;}
+.dnote{background:var(--accent-light);border-radius:8px;padding:9px 12px;
+  font-size:12px;color:#7a4820;margin-top:10px;line-height:1.5;}
+.srule{display:flex;align-items:center;gap:12px;margin:0 0 14px;}
+.srule-line{flex:1;height:0.5px;background:var(--rule);}
+.srule-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.ractions{display:none;gap:4px;flex-shrink:0;margin-left:6px;}
+body.emode .ractions{display:flex;}
+.rbtn{font-size:11px;font-family:'DM Sans',sans-serif;padding:3px 8px;border-radius:5px;
+  border:0.5px solid rgba(0,0,0,0.13);cursor:pointer;background:#fff;color:#5f5e5a;line-height:1.4;}
+.rbtn:hover{background:#f5f5f3;}
+.rbtn.del{color:#a32d2d;border-color:rgba(163,45,45,0.2);}
+.rbtn.del:hover{background:#fcebeb;}
+.addbtn{display:none;width:100%;margin-top:8px;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:500;padding:7px 12px;border-radius:8px;
+  border:0.5px dashed rgba(0,0,0,0.18);background:transparent;color:var(--muted);
+  cursor:pointer;text-align:left;transition:background 0.15s;}
+.addbtn:hover{background:#f5f5f3;color:var(--ink);}
+body.emode .addbtn{display:block;}
+.moverlay{display:none;position:fixed;inset:0;background:rgba(20,18,15,0.5);
+  z-index:500;align-items:center;justify-content:center;padding:20px;}
+.moverlay.open{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:460px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.14);}
+.mtitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;
+  font-style:italic;color:var(--ink);margin-bottom:18px;}
+.mf{margin-bottom:14px;}
+.mf label{display:block;font-size:11px;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+.mf input,.mf select,.mf textarea{
+  width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;
+  border-radius:8px;border:0.5px solid rgba(0,0,0,0.18);color:var(--ink);
+  background:#faf8f4;outline:none;}
+.mf input:focus,.mf select:focus,.mf textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,121,58,0.12);}
+.mf textarea{resize:vertical;min-height:64px;}
+.macts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+.mbtn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  padding:8px 18px;border-radius:8px;cursor:pointer;border:none;}
+.mbtn.cancel{background:#f5f5f3;color:#5f5e5a;}
+.mbtn.cancel:hover{background:#ede9e2;}
+.mbtn.save{background:var(--ink);color:#fff;}
+.mbtn.save:hover{opacity:0.85;}
+.mbtn.danger{background:#fcebeb;color:#a32d2d;margin-right:auto;}
+.mbtn.danger:hover{background:#f7c1c1;}
+@media(max-width:520px){
+  .hdr,.main{padding:14px;}
+  .dfocus,.tmeta{display:none;}
+  .city-name{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="site-title">Theresa &amp; David &mdash; <em>Portugal &amp; Spain 2026</em></div>
+      <div class="site-sub">Day-by-day itinerary &middot; April 8&ndash;25, 2026</div>
+    </div>
+    <div class="hdr-right">
+      <div class="stats">
+        <div><div class="stat-num">17</div><div class="stat-label">nights</div></div>
+        <div><div class="stat-num">5</div><div class="stat-label">cities</div></div>
+        <div><div class="stat-num">18</div><div class="stat-label">reservations</div></div>
+      </div>
+      <button class="edit-btn" id="editToggle" onclick="toggleEdit()">Edit itinerary</button>
+    </div>
+  </div>
+  <div class="city-nav">
+    <a class="cpill cpill-l" href="#lisbon">Lisbon</a>
+    <a class="cpill cpill-s" href="#seville">Seville</a>
+    <a class="cpill cpill-m" href="#madrid">Madrid</a>
+    <a class="cpill cpill-v" href="#valencia">Valencia</a>
+    <a class="cpill cpill-b" href="#barcelona">Barcelona</a>
+  </div>
+</div>
+
+<div class="main" id="main"></div>
+
+<div class="moverlay" id="moverlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mtitle" id="mtitle">Edit item</div>
+    <div class="mf"><label>Time</label><input id="mt" type="text" placeholder="e.g. 9:00 AM, Afternoon"></div>
+    <div class="mf"><label>Activity / name</label><input id="mn" type="text" placeholder="What are you doing?"></div>
+    <div class="mf"><label>Details (optional)</label><textarea id="md" placeholder="Notes, backups, reminders..."></textarea></div>
+    <div class="mf"><label>Type</label>
+      <select id="mty">
+        <option value="">None</option>
+        <option value="dining">Dining</option>
+        <option value="activity">Activity</option>
+        <option value="show">Show</option>
+        <option value="travel">Travel</option>
+        <option value="confirmed">Confirmed</option>
+      </select>
+    </div>
+    <div class="macts">
+      <button class="mbtn danger" id="mdel" onclick="doDelete()" style="display:none">Delete</button>
+      <button class="mbtn cancel" onclick="closeModal()">Cancel</button>
+      <button class="mbtn save" onclick="doSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var GIST_ID   = "b1f965d0c02c2222114c00c90bf6c38e";
+var GIST_FILE = "itin-state.json";
+var GIST_URL  = "https://api.github.com/gists/" + GIST_ID;
+var TOKEN_KEY = "itin-gh-token";
+
+/* Token is stored in localStorage only — never in the source code */
+function getToken() {
+  try { return localStorage.getItem(TOKEN_KEY) || ""; } catch(e) { return ""; }
+}
+function setToken(t) {
+  try { localStorage.setItem(TOKEN_KEY, t.trim()); } catch(e) {}
+}
+
+/* ---- Token setup banner ---- */
+function showTokenBanner() {
+  var existing = document.getElementById("token-banner");
+  if (existing) return;
+  var banner = document.createElement("div");
+  banner.id = "token-banner";
+  banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:#1c1a17;color:#fff;padding:14px 20px;z-index:1000;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'DM Sans',sans-serif;font-size:13px;";
+  banner.innerHTML =
+    '<span style="flex:1;min-width:200px;">Enter your GitHub token to enable saving changes across devices:</span>' +
+    '<input id="token-input" type="password" placeholder="ghp_..." style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:7px;border:none;background:#fff;color:#1c1a17;width:260px;outline:none;" />' +
+    '<button onclick="applyToken()" style="font-family:inherit;font-size:13px;font-weight:500;padding:7px 16px;border-radius:7px;border:none;background:#1D9E75;color:#fff;cursor:pointer;">Save token</button>' +
+    '<button onclick="dismissBanner()" style="font-family:inherit;font-size:12px;padding:7px 12px;border-radius:7px;border:0.5px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">View only</button>';
+  document.body.appendChild(banner);
+  setTimeout(function(){ var i = document.getElementById("token-input"); if(i) i.focus(); }, 100);
+}
+
+function applyToken() {
+  var input = document.getElementById("token-input");
+  if (!input || !input.value.trim()) return;
+  setToken(input.value.trim());
+  dismissBanner();
+  /* Re-initialise with the new token */
+  loadST();
+}
+
+function dismissBanner() {
+  var b = document.getElementById("token-banner");
+  if (b) b.remove();
+}
+
+/* ---- Add token management to edit button area ---- */
+function addTokenResetLink() {
+  var hdrRight = document.querySelector(".hdr-right");
+  if (!hdrRight || document.getElementById("token-reset-link")) return;
+  var link = document.createElement("button");
+  link.id = "token-reset-link";
+  link.textContent = "Update token";
+  link.style.cssText = "font-family:inherit;font-size:11px;color:#b4b2a9;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;";
+  link.onclick = function() { setToken(""); showTokenBanner(); };
+  hdrRight.appendChild(link);
+}
+
+var ST = {e:{}, c:{}, d:{}};
+var MM = null, MT = null;
+var saveTimer = null;
+
+function normST() {
+  if (!ST.e) ST.e = {};
+  if (!ST.c) ST.c = {};
+  if (!ST.d) ST.d = {};
+}
+
+/* ---- Load from Gist (shared across all devices/accounts) ---- */
+function loadST() {
+  var token = getToken();
+  if (!token) {
+    /* No token — show banner, render with empty state */
+    showTokenBanner();
+    renderAll();
+    autoOpenToday();
+    return;
+  }
+
+  var main = document.getElementById("main");
+  if (main) main.style.opacity = "0.5";
+
+  fetch(GIST_URL, {
+    headers: {
+      "Authorization": "token " + token,
+      "Accept": "application/vnd.github.v3+json"
+    }
+  })
+  .then(function(r) {
+    if (r.status === 401) {
+      /* Bad token — clear it and ask again */
+      setToken("");
+      if (main) main.style.opacity = "1";
+      renderAll();
+      autoOpenToday();
+      showTokenBanner();
+      return null;
+    }
+    return r.json();
+  })
+  .then(function(data) {
+    if (!data) return;
+    var file = data.files && data.files[GIST_FILE];
+    if (file && file.content && file.content.trim() !== "{}") {
+      try {
+        var parsed = JSON.parse(file.content);
+        if (parsed && typeof parsed === "object") {
+          ST = parsed;
+          normST();
+        }
+      } catch(ex) {}
+    }
+    if (main) main.style.opacity = "1";
+    addTokenResetLink();
+    renderAll();
+    autoOpenToday();
+  })
+  .catch(function() {
+    /* Network error — fall back to localStorage */
+    try {
+      var x = localStorage.getItem("itin26v2");
+      if (x) { ST = JSON.parse(x); normST(); }
+    } catch(ex) {}
+    if (main) main.style.opacity = "1";
+    renderAll();
+    autoOpenToday();
+  });
+}
+
+/* ---- Save to Gist (debounced 800ms) ---- */
+function saveST() {
+  /* Immediate localStorage backup */
+  try { localStorage.setItem("itin26v2", JSON.stringify(ST)); } catch(ex) {}
+
+  var token = getToken();
+  if (!token) return;
+
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function() {
+    fetch(GIST_URL, {
+      method: "PATCH",
+      headers: {
+        "Authorization": "token " + token,
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        files: { "itin-state.json": { content: JSON.stringify(ST) } }
+      })
+    })
+    .then(function(r) {
+      if (r.status === 401) { setToken(""); showTokenBanner(); }
+    })
+    .catch(function() {});
+  }, 800);
+}
+
+var DAYS = [
+  {id:"d08", num:"Apr 8",  wd:"Wednesday - Departure day", sb:"Home to EWR to overnight flight", fc:"International departure", col:"#5F5E5A",
+   rows:[
+    {id:"r08a", t:"3:30 PM",     n:"Depart home",         dt:"Leave 40 Pemberton Lane by Lyft/Uber to EWR", tg:["travel"]},
+    {id:"r08b", t:"4:15 PM",     n:"Arrive EWR",          dt:"Target curb arrival 3 hours before departure", tg:[]},
+    {id:"r08c", t:"5:00 PM",     n:"Check-in and security", dt:"Bag drop and security at Terminal C", tg:[]},
+    {id:"r08d", t:"6:00 PM",     n:"Dinner",              dt:"United Polaris Lounge, Terminal C", tg:["dining"]},
+    {id:"r08e", t:"8:25 PM",     n:"UA 64 departs",       dt:"Newark to Lisbon - Conf: AGTEMK", tg:["travel"]}
+   ], nt:"Keep passports, chargers, medications, and one overnight change of clothes in carry-on. Sleep on the plane."
+  },
+  {id:"d09", num:"Apr 9",  wd:"Thursday - Arrival day", sb:"Light recovery - Chiado orientation", fc:"Settle in", col:"var(--lisbon)",
+   rows:[
+    {id:"r09a", t:"8:20 AM",      n:"Arrive Lisbon",          dt:"Land at LIS - Taxi to The Ivens", tg:["travel"]},
+    {id:"r09b", t:"9:15 AM",      n:"Check in / bag drop",    dt:"Check in if available, or store luggage and refresh", tg:[]},
+    {id:"r09c", t:"Late morning", n:"Chiado orientation walk", dt:"Praca Luis de Camoes - Rua Garrett - Largo do Carmo - Santa Justa area", tg:[]},
+    {id:"r09d", t:"Afternoon",    n:"Flexible recovery time",  dt:"Light meal, coffee, slow sightseeing", tg:[]},
+    {id:"r09e", t:"Evening",      n:"Dinner near hotel",       dt:"Hotel restaurant at The Ivens - Backup: Pois Cafe", tg:["dining"]}
+   ], nt:"Do not overbook the first day. Protect the next two full walking days."
+  },
+  {id:"d10", num:"Apr 10", wd:"Friday - Alfama and castle day", sb:"Sao Jorge Castle - SUD Lisboa dinner", fc:"Strong walking day", col:"var(--lisbon)",
+   rows:[
+    {id:"r10a", t:"9:00 AM",  n:"Alfama walking start",       dt:"Explore Alfama's narrow historic lanes", tg:["activity"]},
+    {id:"r10b", t:"10:30 AM", n:"Miradouro de Santa Luzia",   dt:"Terrace overlook and photo stop", tg:["activity"]},
+    {id:"r10c", t:"11:15 AM", n:"Sao Jorge Castle",           dt:"Panoramic views over Lisbon", tg:["activity"]},
+    {id:"r10d", t:"1:30 PM",  n:"Lunch in Alfama",            dt:"Pois Cafe, Restaurante O Piteu, or Antu Alfama", tg:["dining"]},
+    {id:"r10e", t:"5:30 PM",  n:"Rooftop cocktails",          dt:"Park Bar or Topo Chiado", tg:["dining"]},
+    {id:"r10f", t:"7:30 PM",  n:"SUD Lisboa Terrazza",        dt:"Dinner reservation - confirmed", tg:["confirmed"]},
+    {id:"r10g", t:"9:30 PM",  n:"Red Frog Speakeasy",         dt:"Reserve if possible", tg:["dining"]}
+   ], nt:"Lisbon is the hilliest city on the trip. Strategic Uber use is acceptable if the morning climb is enough."
+  },
+  {id:"d11", num:"Apr 11", wd:"Saturday - Belem monuments day", sb:"Jeronimos Monastery - O Faia dinner", fc:"Moderate walking", col:"var(--lisbon)",
+   rows:[
+    {id:"r11a", t:"8:15 AM",  n:"Depart for Belem",        dt:"Taxi to Belem to protect walking energy", tg:["travel"]},
+    {id:"r11b", t:"9:00 AM",  n:"Jeronimos Monastery",     dt:"Timed entry - reserved", tg:["activity","confirmed"]},
+    {id:"r11c", t:"10:30 AM", n:"Belem Tower",             dt:"Exterior visit", tg:["activity"]},
+    {id:"r11d", t:"11:00 AM", n:"Pasteis de Belem",        dt:"Original pastel de nata bakery", tg:["dining"]},
+    {id:"r11e", t:"1:00 PM",  n:"Lunch in Belem",          dt:"Riverside or Belem-area lunch", tg:["dining"]},
+    {id:"r11f", t:"3:30 PM",  n:"Riverside walk",          dt:"Easy waterfront stroll - Taxi back before dinner", tg:[]},
+    {id:"r11g", t:"8:00 PM",  n:"O Faia",                  dt:"Dinner - Traditional fado restaurant - confirmed", tg:["confirmed"]}
+   ]
+  },
+  {id:"d12", num:"Apr 12", wd:"Sunday - Chiado and Bairro Alto", sb:"Carmo Convent - Sala de Corte dinner", fc:"Historic walking route", col:"var(--lisbon)",
+   rows:[
+    {id:"r12a", t:"9:30 AM",   n:"Walking route begins",           dt:"Start at Praca Luis de Camoes", tg:["activity"]},
+    {id:"r12b", t:"11:30 AM",  n:"Livraria Bertrand",              dt:"World's oldest operating bookstore", tg:["activity"]},
+    {id:"r12c", t:"Midday",    n:"Carmo Convent and Santa Justa",  dt:"Igreja da Encarnacao - Largo do Carmo - Santa Justa viewpoint", tg:["activity"]},
+    {id:"r12d", t:"1:00 PM",   n:"Time Out Market",                dt:"Lunch", tg:["dining"]},
+    {id:"r12e", t:"Afternoon", n:"Bairro Alto route",              dt:"Church of Sao Roque - Miradouro de Sao Pedro de Alcantara - optional Elevador da Bica", tg:["activity"]},
+    {id:"r12f", t:"5:30 PM",   n:"Park Rooftop Bar",               dt:"Rooftop drinks", tg:["dining"]},
+    {id:"r12g", t:"7:00 PM",   n:"Sala de Corte",                  dt:"Dinner - Steakhouse - Coffee backup: Cafe A Brasileira - confirmed", tg:["confirmed"]}
+   ]
+  },
+  {id:"d13", num:"Apr 13", wd:"Monday - Arrival day Seville", sb:"Flight from Lisbon - Easy first evening", fc:"Preserve energy", col:"var(--seville)",
+   rows:[
+    {id:"r13a", t:"Morning",       n:"Hotel checkout and airport", dt:"Easy start - Leave hotel 10:30-10:45 AM for LIS", tg:[]},
+    {id:"r13b", t:"3:05 PM",       n:"Arrive Seville",            dt:"Taxi to Hotel Alfonso XIII", tg:["travel"]},
+    {id:"r13c", t:"Late afternoon",n:"Check in and short walk",   dt:"Orientation walk near hotel only", tg:[]},
+    {id:"r13d", t:"Evening",       n:"Dinner open",               dt:"Hotel restaurant, Casa Morales, Bodega Santa Cruz, or El Rinconcillo", tg:["dining"]}
+   ], nt:"Preserve energy for the major Alcazar / Cathedral day tomorrow."
+  },
+  {id:"d14", num:"Apr 14", wd:"Tuesday - Alcazar day", sb:"Cathedral - Giralda - Flamenco show", fc:"Full day of monuments", col:"var(--seville)",
+   rows:[
+    {id:"r14a", t:"9:30 AM",  n:"Real Alcazar",       dt:"Reserved entry", tg:["activity","confirmed"]},
+    {id:"r14b", t:"11:30 AM", n:"Seville Cathedral",  dt:"Reserved entry", tg:["activity","confirmed"]},
+    {id:"r14c", t:"12:30 PM", n:"La Giralda Climb",   dt:"Reserved entry", tg:["activity","confirmed"]},
+    {id:"r14d", t:"1:00 PM",  n:"Lunch",              dt:"Casa Morales, Bodega Santa Cruz, or Las Columnas", tg:["dining"]},
+    {id:"r14e", t:"3:00 PM",  n:"Santa Cruz wander",  dt:"Stroll through the former Jewish Quarter", tg:["activity"]},
+    {id:"r14f", t:"6:00 PM",  n:"Tablao El Arenal",   dt:"Flamenco show - confirmed", tg:["show","confirmed"]}
+   ]
+  },
+  {id:"d15", num:"Apr 15", wd:"Wednesday - Plaza de Espana and Maria Luisa Park", sb:"Riverfront - Rio Grande dinner", fc:"Visually rich flat day", col:"var(--seville)",
+   rows:[
+    {id:"r15a", t:"9:30 AM",  n:"Plaza de Espana",      dt:"Main architectural visit", tg:["activity"]},
+    {id:"r15b", t:"10:30 AM", n:"Maria Luisa Park",     dt:"Anibal Gonzalez Monument - Monte Gurugu - Isleta de los Patos - Glorieta de Becquer - Plaza de America", tg:["activity"]},
+    {id:"r15c", t:"1:30 PM",  n:"Lunch",                dt:"Triana or park-adjacent - Backups: Blanca Paloma, Bar Triana, Las Golondrinas", tg:["dining"]},
+    {id:"r15d", t:"6:30 PM",  n:"Riverside drinks",     dt:"EME, Atico Sevilla, Terraza Fulton, Level 5th, or Muelle de Nueva York", tg:["dining"]},
+    {id:"r15e", t:"8:15 PM",  n:"Rio Grande Restaurant",dt:"Dinner - confirmed", tg:["confirmed"]}
+   ]
+  },
+  {id:"d16", num:"Apr 16", wd:"Thursday - Rail day and arrival Madrid", sb:"Seville to Madrid by train", fc:"Travel day", col:"var(--madrid)",
+   rows:[
+    {id:"r16a", t:"8:30 AM",   n:"Checkout and breakfast",     dt:"Leave Seville without rushing", tg:[]},
+    {id:"r16b", t:"9:45 AM",   n:"Taxi to Sevilla Santa Justa",dt:"", tg:["travel"]},
+    {id:"r16c", t:"~10:30 AM", n:"Direct AVE train",           dt:"Seville Santa Justa to Madrid Atocha", tg:["travel"]},
+    {id:"r16d", t:"~1:10 PM",  n:"Arrive Madrid",              dt:"Taxi from Atocha to The Palace Madrid", tg:[]},
+    {id:"r16e", t:"Afternoon", n:"Check in / short walk",      dt:"Stay close to hotel and museum district", tg:[]},
+    {id:"r16f", t:"Evening",   n:"Dinner open",                dt:"Hotel or nearby", tg:["dining"]}
+   ]
+  },
+  {id:"d17", num:"Apr 17", wd:"Friday - Prado and Retiro", sb:"Prado Museum - Sobrino de Botin dinner", fc:"Museums and park", col:"var(--madrid)",
+   rows:[
+    {id:"r17a", t:"10:00 AM", n:"Prado Museum",               dt:"Reserved entry", tg:["activity","confirmed"]},
+    {id:"r17b", t:"12:00 PM", n:"Lunch",                      dt:"El 17 de Moreto, Brisket Restaurante, or Tinto y Tapas Principe", tg:["dining"]},
+    {id:"r17c", t:"2:00 PM",  n:"Retiro Park and Crystal Palace",dt:"", tg:["activity"]},
+    {id:"r17d", t:"5:00 PM",  n:"Sobrino de Botin",           dt:"Dinner - World's oldest restaurant - confirmed", tg:["confirmed"]},
+    {id:"r17e", t:"8:00 PM",  n:"Cocktail options",           dt:"Salmon Guru, 27 Club, Viva Madrid, or La Santoria", tg:["dining"]}
+   ]
+  },
+  {id:"d18", num:"Apr 18", wd:"Saturday - Historic core", sb:"Royal Palace - Plaza Mayor - San Gines", fc:"Compact historic routing", col:"var(--madrid)",
+   rows:[
+    {id:"r18a", t:"9:30 AM",   n:"Royal Palace and Almudena Cathedral",dt:"", tg:["activity"]},
+    {id:"r18b", t:"10:30 AM",  n:"Plaza Mayor and Puerta del Sol",     dt:"", tg:["activity"]},
+    {id:"r18c", t:"12:30 PM",  n:"Mercado de San Miguel",              dt:"Lunch", tg:["dining"]},
+    {id:"r18d", t:"1:30 PM",   n:"Chocolateria San Gines",             dt:"Churros con chocolate", tg:["dining"]},
+    {id:"r18e", t:"Afternoon", n:"Plaza de Oriente stroll",            dt:"", tg:["activity"]},
+    {id:"r18f", t:"8:00 PM",   n:"Dinner open",                        dt:"La Castela, Taberna El Sur, or Taberna El Sur de Huertas", tg:["dining"]},
+    {id:"r18g", t:"9:30 PM",   n:"Rooftop drinks",                     dt:"Azotea del Circulo or NH Collection Madrid Suecia", tg:["dining"]}
+   ]
+  },
+  {id:"d19", num:"Apr 19", wd:"Sunday - Rail day and arrival Valencia", sb:"Madrid to Valencia - Beach arrival", fc:"Intentionally light", col:"var(--valencia)",
+   rows:[
+    {id:"r19a", t:"8:45 AM",   n:"Checkout and breakfast",     dt:"Leave Madrid on a comfortable schedule", tg:[]},
+    {id:"r19b", t:"9:45 AM",   n:"Taxi to Madrid Atocha",      dt:"", tg:["travel"]},
+    {id:"r19c", t:"~10:30 AM", n:"Direct AVE train",           dt:"Madrid Atocha to Valencia Joaquin Sorolla", tg:["travel"]},
+    {id:"r19d", t:"~12:25 PM", n:"Arrive Valencia",            dt:"Taxi to Las Arenas Balneario Resort", tg:[]},
+    {id:"r19e", t:"Afternoon", n:"Check in / beach reset",     dt:"Protect time for a slow arrival", tg:[]},
+    {id:"r19f", t:"Evening",   n:"Dinner open",                dt:"Hotel or nearby on the promenade", tg:["dining"]}
+   ]
+  },
+  {id:"d20", num:"Apr 20", wd:"Monday - Old Town and paella day", sb:"Valencia Cathedral - La Pepica dinner", fc:"Old town and waterfront", col:"var(--valencia)",
+   rows:[
+    {id:"r20a", t:"10:30 AM", n:"Valencia Cathedral",  dt:"Holy Grail visit - No reservation required - Taxi into old town", tg:["activity"]},
+    {id:"r20b", t:"12:00 PM", n:"Central Market",      dt:"Food hall and browsing", tg:["activity"]},
+    {id:"r20c", t:"2:00 PM",  n:"Plaza de la Virgen",  dt:"Old town pause and photos", tg:["activity"]},
+    {id:"r20d", t:"Afternoon",n:"Return and refresh",  dt:"Head back toward hotel before dinner", tg:[]},
+    {id:"r20e", t:"7:30 PM",  n:"La Pepica",           dt:"Dinner - Classic Valencian paella - confirmed", tg:["confirmed"]},
+    {id:"r20f", t:"10:00 PM", n:"Atenea Sky",          dt:"Cocktails", tg:["dining"]}
+   ]
+  },
+  {id:"d21", num:"Apr 21", wd:"Tuesday - Turia waterfront and spa", sb:"City of Arts and Sciences - Spa Las Arenas", fc:"Restorative day", col:"var(--valencia)",
+   rows:[
+    {id:"r21a", t:"9:30 AM",  n:"Turia Gardens walk",           dt:"Easy greenway walk", tg:["activity"]},
+    {id:"r21b", t:"11:00 AM", n:"City of Arts and Sciences",    dt:"", tg:["activity"]},
+    {id:"r21c", t:"12:30 PM", n:"Destino Puerto",               dt:"Lunch at the marina", tg:["dining"]},
+    {id:"r21d", t:"2:00 PM",  n:"Spa at Las Arenas",            dt:"Balneario Resort spa block - protect this time", tg:["activity"]},
+    {id:"r21e", t:"6:00 PM",  n:"Evening beach promenade stroll",dt:"", tg:["activity"]},
+    {id:"r21f", t:"7:30 PM",  n:"Casual beachfront dinner",     dt:"Boa Beach, La Mas Bonita, or La Fabrica de Hielo", tg:["dining"]}
+   ], nt:"Intentionally restorative. Avoid over-scheduling. Protect the spa block."
+  },
+  {id:"d22", num:"Apr 22", wd:"Wednesday - Rail day and arrival Barcelona", sb:"Valencia to Barcelona - Eixample arrival", fc:"Light first day", col:"var(--barcelona)",
+   rows:[
+    {id:"r22a", t:"7:45 AM",   n:"Checkout and breakfast",      dt:"Early but not rushed departure", tg:[]},
+    {id:"r22b", t:"8:30 AM",   n:"Taxi to Valencia station",    dt:"", tg:["travel"]},
+    {id:"r22c", t:"~9:15 AM",  n:"Euromed direct train",        dt:"Valencia Joaquin Sorolla to Barcelona Sants", tg:["travel"]},
+    {id:"r22d", t:"~12:30 PM", n:"Arrive Barcelona",            dt:"Taxi to Cotton House Hotel", tg:[]},
+    {id:"r22e", t:"Afternoon", n:"Check in / orientation walk", dt:"Keep the first Barcelona day light", tg:[]},
+    {id:"r22f", t:"Evening",   n:"Dinner open",                 dt:"Hotel or nearby - Backups: Vinitus, El Nacional, Alsur Cafe", tg:["dining"]}
+   ]
+  },
+  {id:"d23", num:"Apr 23", wd:"Thursday - Gaudi masterpieces", sb:"Park Guell - Sagrada Familia - La Pedrera night", fc:"Densest Barcelona day", col:"var(--barcelona)",
+   rows:[
+    {id:"r23a", t:"9:30 AM",  n:"Park Guell",              dt:"Taxi from hotel - reserved", tg:["activity","confirmed"]},
+    {id:"r23b", t:"12:00 PM", n:"El Nacional",             dt:"Lunch", tg:["dining"]},
+    {id:"r23c", t:"1:30 PM",  n:"MUHBA Roman ruins",       dt:"Historic interlude in the Gothic core", tg:["activity"]},
+    {id:"r23d", t:"3:45 PM",  n:"Sagrada Familia",         dt:"Reserved entry", tg:["activity","confirmed"]},
+    {id:"r23e", t:"7:00 PM",  n:"Dinner",                  dt:"Near La Pedrera - Vinitus, Sintonia, or hotel restaurant", tg:["dining"]},
+    {id:"r23f", t:"9:00 PM",  n:"La Pedrera evening visit",dt:"Planned reserved entry", tg:["activity","confirmed"]},
+    {id:"r23g", t:"10:00 PM", n:"Paradiso",                dt:"Cocktails", tg:["dining"]}
+   ], nt:"Densest day of the trip. Keep transport practical - especially taxi to Park Guell."
+  },
+  {id:"d24", num:"Apr 24", wd:"Friday - Gothic Quarter and final Barcelona day", sb:"Casa Batllo - Els 4 Gats lunch - La Pepita dinner", fc:"Las Ramblas and Gothic", col:"var(--barcelona)",
+   rows:[
+    {id:"r24a", t:"9:00 AM",  n:"Casa Batllo",                     dt:"Morning visit / audio rooftop", tg:["activity"]},
+    {id:"r24b", t:"11:30 AM", n:"Chocolate Museum or La Pedrera",  dt:"Pair with second reserved site depending on final ticketing", tg:["activity"]},
+    {id:"r24c", t:"1:00 PM",  n:"Els 4 Gats",                      dt:"Lunch - Historic Modernista cafe - confirmed", tg:["confirmed"]},
+    {id:"r24d", t:"2:30 PM",  n:"Gothic Quarter exploration",      dt:"Placa del Rei - Temple of Augustus - Via Sepulcral Romana", tg:["activity"]},
+    {id:"r24e", t:"6:00 PM",  n:"Las Ramblas walk",                dt:"", tg:["activity"]},
+    {id:"r24f", t:"7:00 PM",  n:"La Pepita",                       dt:"Dinner - Final evening in Barcelona - confirmed", tg:["confirmed"]},
+    {id:"r24g", t:"9:00 PM",  n:"Dr. Stravinsky",                  dt:"Cocktails", tg:["dining"]}
+   ]
+  }
+];
+
+var SECS = [
+  {id:"departure", lbl:null, col:null,
+   pre:{ic:"&#9992;", rt:"Newark (EWR) -> Lisbon (LIS)",
+     dt2:"Wednesday Apr 8 · United Airlines UA 64 · Polaris Business · Overnight",
+     tm:"8:25 PM -> 8:20 AM", cd:"Conf: AGTEMK"},
+   days:["d08"]},
+  {id:"lisbon", lbl:"Lisbon", col:"var(--lisbon)",
+   dates:"Thursday Apr 9 - Monday Apr 13 · 4 nights",
+   hotel:"The Ivens, Autograph Collection · Conf #90934178",
+   days:["d09","d10","d11","d12"],
+   post:{ic:"&#9992;", rt:"Lisbon (LIS) -> Seville (SVQ)",
+     dt2:"Monday Apr 13 · TAP Air Portugal TP 1104 · Checked bag + hand bag included",
+     tm:"1:05 PM -> 3:05 PM", cd:"Booking: YUHL7A"}},
+  {id:"seville", lbl:"Seville", col:"var(--seville)",
+   dates:"Monday Apr 13 - Thursday Apr 16 · 3 nights",
+   hotel:"Hotel Alfonso XIII, Luxury Collection · Conf #90954648",
+   days:["d13","d14","d15"],
+   post:{ic:"&#128646;", rt:"Seville Santa Justa -> Madrid Atocha",
+     dt2:"Thursday Apr 16 · Direct AVE · ~2h 30m · Budget EUR 25-70 pp",
+     tm:"~10:30 AM -> ~1:10 PM", cd:"Book direct"}},
+  {id:"madrid", lbl:"Madrid", col:"var(--madrid)",
+   dates:"Thursday Apr 16 - Sunday Apr 19 · 3 nights",
+   hotel:"The Palace, a Luxury Collection Hotel",
+   days:["d16","d17","d18"],
+   post:{ic:"&#128646;", rt:"Madrid Atocha -> Valencia Joaquin Sorolla",
+     dt2:"Sunday Apr 19 · Direct AVE · ~1h 55m · Budget EUR 20-60 pp",
+     tm:"~10:30 AM -> ~12:25 PM", cd:"Book direct"}},
+  {id:"valencia", lbl:"Valencia", col:"var(--valencia)",
+   dates:"Sunday Apr 19 - Wednesday Apr 22 · 3 nights",
+   hotel:"Las Arenas Balneario Resort · Res #25072859963",
+   days:["d19","d20","d21"],
+   post:{ic:"&#128646;", rt:"Valencia Joaquin Sorolla -> Barcelona Sants",
+     dt2:"Wednesday Apr 22 · Direct Euromed · ~3h 15m · Budget EUR 30-90 pp",
+     tm:"~9:15 AM -> ~12:30 PM", cd:"Book direct"}},
+  {id:"barcelona", lbl:"Barcelona", col:"var(--barcelona)",
+   dates:"Wednesday Apr 22 - Saturday Apr 25 · 3 nights",
+   hotel:"Cotton House Hotel, Autograph Collection · Conf #89578107",
+   days:["d22","d23","d24"],
+   post:{ic:"&#9992;", rt:"Barcelona (BCN) -> Newark (EWR)",
+     dt2:"Saturday Apr 25 · United Airlines UA 121 · United Premium Plus · Depart Cotton House ~8:30 AM",
+     tm:"12:00 PM -> 3:00 PM", cd:"Conf: AGTEMK · Eddie pick-up at EWR"}}
+];
+
+function getDayById(id) {
+  for (var i = 0; i < DAYS.length; i++) if (DAYS[i].id === id) return DAYS[i];
+  return null;
+}
+
+/* ---- TIME SORT ---- */
+/* Convert a time string to minutes since midnight for sorting.
+   Handles "9:00 AM", "~10:30 AM", "Late morning", "Afternoon", "Evening" etc. */
+function timeToMins(s) {
+  if (!s) return 9999;
+  s = s.replace(/^~/, "").trim().toUpperCase();
+  /* Named slots */
+  var named = {
+    "EARLY MORNING":  5*60,  "MORNING":    8*60,
+    "LATE MORNING":   10*60, "MIDDAY":     12*60,
+    "NOON":           12*60, "AFTERNOON":  14*60,
+    "LATE AFTERNOON": 16*60, "EVENING":    19*60,
+    "NIGHT":          21*60, "LATE NIGHT": 23*60
+  };
+  if (named[s] !== undefined) return named[s];
+  /* Try HH:MM AM/PM */
+  var m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/);
+  if (m) {
+    var h = parseInt(m[1], 10);
+    var min = parseInt(m[2], 10);
+    var ampm = m[3];
+    if (ampm === "PM" && h !== 12) h += 12;
+    if (ampm === "AM" && h === 12) h = 0;
+    return h * 60 + min;
+  }
+  /* Try HH AM/PM (no minutes) */
+  var m2 = s.match(/(\d{1,2})\s*(AM|PM)/);
+  if (m2) {
+    var h2 = parseInt(m2[1], 10);
+    var ampm2 = m2[2];
+    if (ampm2 === "PM" && h2 !== 12) h2 += 12;
+    if (ampm2 === "AM" && h2 === 12) h2 = 0;
+    return h2 * 60;
+  }
+  return 9999; /* unrecognised - send to end */
+}
+
+function X(s) {
+  if (!s) return "";
+  var r = "";
+  for (var i = 0; i < s.length; i++) {
+    var c = s[i];
+    if (c === "&") r += "&amp;";
+    else if (c === "<") r += "&lt;";
+    else if (c === ">") r += "&gt;";
+    else if (c === '"') r += "&quot;";
+    else r += c;
+  }
+  return r;
+}
+
+function makeTags(tg) {
+  var h = "";
+  for (var i = 0; i < tg.length; i++) {
+    var v = tg[i];
+    h += '<span class="tag tag-' + v + '">' + v.charAt(0).toUpperCase() + v.slice(1) + '</span>';
+  }
+  return h;
+}
+
+function dotCol(tg, cityCol) {
+  if (tg && tg.indexOf("confirmed") >= 0) return "var(--green)";
+  return cityCol;
+}
+
+function rowHTML(row, cityCol) {
+  if (ST.d[row.id]) return "";
+  var e = ST.e[row.id];
+  var time = e ? e.t : row.t;
+  var name = e ? e.n : row.n;
+  var det  = e ? e.dt : row.dt;
+  var tg   = e ? (e.ty ? [e.ty] : []) : (row.tg || []);
+  var xtra = e ? '<span class="tag tag-edited">Edited</span>' : "";
+  return '<div class="srow" id="sr-' + row.id + '">' +
+    '<div class="stime">' + X(time) + '</div>' +
+    '<div class="sdot" style="background:' + dotCol(tg, cityCol) + '"></div>' +
+    '<div class="scont">' +
+      '<div class="sname">' + X(name) + makeTags(tg) + xtra + '</div>' +
+      (det ? '<div class="sdet">' + X(det) + '</div>' : '') +
+    '</div>' +
+    '<div class="ractions">' +
+      '<button class="rbtn" onclick="openEdit(\'' + row.id + '\',event)">Edit</button>' +
+      '<button class="rbtn del" onclick="openDel(\'' + row.id + '\',event)">Delete</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function singleCustomRowHTML(dayId, c, cityCol) {
+  var dc = c.ty ? (c.ty === "confirmed" ? "var(--green)" : cityCol) : cityCol;
+  var tg2 = c.ty ? '<span class="tag tag-' + c.ty + '">' + c.ty.charAt(0).toUpperCase() + c.ty.slice(1) + '</span>' : "";
+  return '<div class="srow" id="sr-' + c.id + '">' +
+    '<div class="stime">' + X(c.t) + '</div>' +
+    '<div class="sdot" style="background:' + dc + '"></div>' +
+    '<div class="scont">' +
+      '<div class="sname">' + X(c.n) + tg2 + '<span class="tag tag-custom">Custom</span></div>' +
+      (c.dt ? '<div class="sdet">' + X(c.dt) + '</div>' : '') +
+    '</div>' +
+    '<div class="ractions">' +
+      '<button class="rbtn" onclick="openEditCustom(\'' + dayId + '\',\'' + c.id + '\',event)">Edit</button>' +
+      '<button class="rbtn del" onclick="delCustom(\'' + dayId + '\',\'' + c.id + '\',event)">Delete</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function customRowsHTML(dayId, cityCol) {
+  var arr = ST.c[dayId];
+  if (!arr || !arr.length) return "";
+  var h = "";
+  for (var i = 0; i < arr.length; i++) h += singleCustomRowHTML(dayId, arr[i], cityCol);
+  return h;
+}
+
+function dayHTML(dayId) {
+  var d = getDayById(dayId);
+  if (!d) return "";
+
+  /* Build a unified list of row descriptors: {kind, rowId, time, ...} */
+  var allRows = [];
+
+  /* Base rows (not deleted) */
+  var base = d.rows || [];
+  for (var i = 0; i < base.length; i++) {
+    var row = base[i];
+    if (ST.d[row.id]) continue; /* deleted */
+    var e = ST.e[row.id];
+    var effectiveTime = e ? e.t : row.t;
+    allRows.push({kind:"base", row:row, time:effectiveTime, mins:timeToMins(effectiveTime)});
+  }
+
+  /* Custom rows */
+  var customs = ST.c[dayId] || [];
+  for (var j = 0; j < customs.length; j++) {
+    var c = customs[j];
+    allRows.push({kind:"custom", dayId:dayId, c:c, time:c.t, mins:timeToMins(c.t)});
+  }
+
+  /* Stable sort by time */
+  allRows.sort(function(a, b) { return a.mins - b.mins; });
+
+  var rh = "";
+  for (var k = 0; k < allRows.length; k++) {
+    var item = allRows[k];
+    if (item.kind === "base") {
+      rh += rowHTML(item.row, d.col);
+    } else {
+      rh += singleCustomRowHTML(item.dayId, item.c, d.col);
+    }
+  }
+
+  return '<div class="dcard" id="dc-' + dayId + '">' +
+    '<div class="dhdr" onclick="toggleDay(this)">' +
+      '<div class="dnum">' + d.num + '</div>' +
+      '<div class="dtblock"><div class="dweekday">' + d.wd + '</div>' +
+        (d.sb ? '<div class="dsub">' + d.sb + '</div>' : '') + '</div>' +
+      '<div class="dfocus">' + (d.fc || "") + '</div>' +
+      '<div class="dchev">&#9660;</div>' +
+    '</div>' +
+    '<div class="dbody" id="db-' + dayId + '">' + rh +
+      (d.nt ? '<div class="dnote">' + d.nt + '</div>' : '') +
+      '<button class="addbtn" onclick="openAdd(\'' + dayId + '\',event)">+ Add item to this day</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function travelHTML(tc) {
+  return '<div class="tcard">' +
+    '<div class="ticon">' + tc.ic + '</div>' +
+    '<div style="flex:1"><div class="troute">' + tc.rt + '</div><div class="tdetail">' + tc.dt2 + '</div></div>' +
+    '<div class="tmeta"><div class="ttime">' + tc.tm + '</div><div class="tcode">' + tc.cd + '</div></div>' +
+  '</div>';
+}
+
+function renderAll() {
+  var h = "";
+  for (var si = 0; si < SECS.length; si++) {
+    var sec = SECS[si];
+    h += '<div class="city-sec" id="' + sec.id + '">';
+    if (!sec.lbl) {
+      h += '<div class="srule"><div class="srule-line"></div><div class="srule-lbl">Departure</div><div class="srule-line"></div></div>';
+      if (sec.pre) h += travelHTML(sec.pre);
+    } else {
+      h += '<div class="city-hdr">' +
+        '<div class="city-bar" style="background:' + sec.col + '"></div>' +
+        '<div><div class="city-name">' + sec.lbl + '</div>' +
+          '<div class="city-dates">' + sec.dates + '</div>' +
+          '<div class="city-hotel">' + sec.hotel + '</div></div>' +
+      '</div>';
+    }
+    for (var di = 0; di < sec.days.length; di++) h += dayHTML(sec.days[di]);
+    if (sec.post) h += travelHTML(sec.post);
+    h += '</div>';
+  }
+  document.getElementById("main").innerHTML = h;
+}
+
+function toggleDay(hdr) {
+  var body = hdr.nextElementSibling;
+  var op = body.classList.contains("open");
+  hdr.classList.toggle("open", !op);
+  body.classList.toggle("open", !op);
+}
+
+function toggleEdit() {
+  document.body.classList.toggle("emode");
+  var btn = document.getElementById("editToggle");
+  if (document.body.classList.contains("emode")) {
+    btn.textContent = "Done editing";
+    btn.classList.add("on");
+  } else {
+    btn.textContent = "Edit itinerary";
+    btn.classList.remove("on");
+  }
+}
+
+function openOverlay(title, time, name, det, type, showDel) {
+  document.getElementById("mtitle").textContent = title;
+  document.getElementById("mt").value  = time  || "";
+  document.getElementById("mn").value  = name  || "";
+  document.getElementById("md").value  = det   || "";
+  document.getElementById("mty").value = type  || "";
+  document.getElementById("mdel").style.display = showDel ? "inline-flex" : "none";
+  document.getElementById("moverlay").classList.add("open");
+  setTimeout(function(){ document.getElementById("mt").focus(); }, 60);
+}
+
+function closeModal() {
+  document.getElementById("moverlay").classList.remove("open");
+  MM = null; MT = null;
+}
+
+function openEdit(rowId, ev) {
+  if (ev) ev.stopPropagation();
+  var row = null;
+  for (var i = 0; i < DAYS.length && !row; i++)
+    for (var j = 0; j < DAYS[i].rows.length; j++)
+      if (DAYS[i].rows[j].id === rowId) { row = DAYS[i].rows[j]; break; }
+  var e = ST.e[rowId];
+  MM = "edit"; MT = rowId;
+  openOverlay("Edit item",
+    e ? e.t  : (row ? row.t  : ""),
+    e ? e.n  : (row ? row.n  : ""),
+    e ? e.dt : (row ? row.dt : ""),
+    e ? e.ty : (row && row.tg && row.tg.length ? row.tg[0] : ""),
+    false);
+}
+
+function openEditCustom(dayId, rowId, ev) {
+  if (ev) ev.stopPropagation();
+  var arr = ST.c[dayId] || [], c = null;
+  for (var i = 0; i < arr.length; i++) if (arr[i].id === rowId) { c = arr[i]; break; }
+  if (!c) return;
+  MM = "editc"; MT = {did:dayId, rid:rowId};
+  openOverlay("Edit custom item", c.t, c.n, c.dt, c.ty, true);
+}
+
+function openDel(rowId, ev) {
+  if (ev) ev.stopPropagation();
+  var row = null;
+  for (var i = 0; i < DAYS.length && !row; i++)
+    for (var j = 0; j < DAYS[i].rows.length; j++)
+      if (DAYS[i].rows[j].id === rowId) { row = DAYS[i].rows[j]; break; }
+  var e = ST.e[rowId];
+  MM = "del"; MT = rowId;
+  openOverlay("Delete item",
+    e ? e.t : (row ? row.t : ""),
+    e ? e.n : (row ? row.n : ""),
+    e ? e.dt : (row ? row.dt : ""),
+    "", true);
+}
+
+function openAdd(dayId, ev) {
+  if (ev) ev.stopPropagation();
+  MM = "add"; MT = dayId;
+  openOverlay("Add item to this day", "", "", "", "", false);
+}
+
+function findDayForRow(rowId) {
+  for (var i = 0; i < DAYS.length; i++)
+    for (var j = 0; j < DAYS[i].rows.length; j++)
+      if (DAYS[i].rows[j].id === rowId) return DAYS[i].id;
+  return null;
+}
+
+function reopenDay(dayId) {
+  var hdr = document.querySelector("#dc-" + dayId + " .dhdr");
+  var body = document.getElementById("db-" + dayId);
+  if (hdr && body) { hdr.classList.add("open"); body.classList.add("open"); }
+}
+
+function doSave() {
+  var t  = document.getElementById("mt").value.trim();
+  var n  = document.getElementById("mn").value.trim();
+  var dt = document.getElementById("md").value.trim();
+  var ty = document.getElementById("mty").value;
+  if (!n) { document.getElementById("mn").focus(); return; }
+
+  if (MM === "edit") {
+    ST.e[MT] = {t:t, n:n, dt:dt, ty:ty};
+    saveST(); var did = findDayForRow(MT); renderAll(); if (did) reopenDay(did);
+  } else if (MM === "editc") {
+    var arr = ST.c[MT.did] || [];
+    for (var i = 0; i < arr.length; i++)
+      if (arr[i].id === MT.rid) { arr[i].t=t; arr[i].n=n; arr[i].dt=dt; arr[i].ty=ty; break; }
+    ST.c[MT.did] = arr; saveST(); renderAll(); reopenDay(MT.did);
+  } else if (MM === "add") {
+    var nid = "x" + Date.now();
+    if (!ST.c[MT]) ST.c[MT] = [];
+    ST.c[MT].push({id:nid, t:t, n:n, dt:dt, ty:ty});
+    saveST(); renderAll(); reopenDay(MT);
+  }
+  closeModal();
+}
+
+function doDelete() {
+  if (MM === "del") {
+    ST.d[MT] = 1; delete ST.e[MT];
+    saveST(); renderAll();
+  } else if (MM === "editc") {
+    delCustom(MT.did, MT.rid, null); return;
+  }
+  closeModal();
+}
+
+function delCustom(dayId, rowId, ev) {
+  if (ev) ev.stopPropagation();
+  var arr = ST.c[dayId] || [];
+  ST.c[dayId] = arr.filter(function(c){ return c.id !== rowId; });
+  saveST(); renderAll(); reopenDay(dayId);
+  closeModal();
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeModal();
+  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) doSave();
+});
+
+function autoOpenToday() {
+  var n = new Date();
+  var td = n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+  var MAP = {"2026-04-08":"d08","2026-04-09":"d09","2026-04-10":"d10","2026-04-11":"d11",
+    "2026-04-12":"d12","2026-04-13":"d13","2026-04-14":"d14","2026-04-15":"d15",
+    "2026-04-16":"d16","2026-04-17":"d17","2026-04-18":"d18","2026-04-19":"d19",
+    "2026-04-20":"d20","2026-04-21":"d21","2026-04-22":"d22","2026-04-23":"d23","2026-04-24":"d24"};
+  var did = MAP[td];
+  if (!did) return;
+  setTimeout(function() {
+    reopenDay(did);
+    var el = document.getElementById("dc-" + did);
+    if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+  }, 100);
+}
+
+loadST();
+/* renderAll and autoOpenToday are called inside loadST after fetch completes */
+</script>
+</body>
+</html>
