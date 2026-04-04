@@ -174,31 +174,80 @@ body{
 </div>
 
 <script>
-var SKEY = "intl-calling-2026";
-var MAX_DAYS = 11;
+var SKEY      = "intl-calling-2026";
+var GIST_ID   = "b1f965d0c02c2222114c00c90bf6c38e";
+var GIST_FILE = "calling-state.json";
+var GIST_URL  = "https://api.github.com/gists/" + GIST_ID;
+var TOKEN_KEY = "itin-gh-token";
+var saveTimer = null;
+var MAX_DAYS  = 11;
 
 var PHONES = [
-  { id:"p1", number:"609-647-1697", owner:"Theresa" },
-  { id:"p2", number:"609-647-1698", owner:"David" }
+  { id:"p1", number:"609-647-1698", owner:"Theresa" },
+  { id:"p2", number:"609-647-1697", owner:"David" }
 ];
 
 /* ---- State ---- */
 var STATE = {};
 
-function loadState() {
-  try {
-    var s = localStorage.getItem(SKEY);
-    if (s) STATE = JSON.parse(s);
-  } catch(e) {}
-  PHONES.forEach(function(p) {
-    if (!STATE[p.id]) STATE[p.id] = { remaining: MAX_DAYS, history: [] };
-    if (STATE[p.id].remaining === undefined) STATE[p.id].remaining = MAX_DAYS;
-    if (!STATE[p.id].history) STATE[p.id].history = [];
+function getToken(){ try{ return localStorage.getItem(TOKEN_KEY)||""; }catch(e){ return ""; } }
+function setToken(t){ try{ localStorage.setItem(TOKEN_KEY,t.trim()); }catch(e){} }
+
+function showBanner(){
+  if(document.getElementById("ts-banner")) return;
+  var b=document.createElement("div"); b.id="ts-banner";
+  b.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#1c1a17;color:#fff;padding:12px 16px;z-index:9999;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:inherit;font-size:13px;box-shadow:0 -2px 12px rgba(0,0,0,0.3);";
+  b.innerHTML='<span style="flex:1;min-width:160px;">Enter GitHub token to sync across devices:</span>'+
+    '<input id="ts-in" type="password" placeholder="ghp_..." style="font-family:inherit;font-size:13px;padding:7px 10px;border-radius:7px;border:none;background:#fff;color:#1c1a17;width:220px;outline:none;"/>'+
+    '<button onclick="applyToken()" style="font-family:inherit;font-size:13px;font-weight:500;padding:7px 14px;border-radius:7px;border:none;background:#1D9E75;color:#fff;cursor:pointer;">Save</button>'+
+    '<button onclick="document.getElementById(\'ts-banner\').remove()" style="font-family:inherit;font-size:12px;padding:7px 10px;border-radius:7px;border:0.5px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;">View only</button>';
+  document.body.appendChild(b);
+  setTimeout(function(){ var i=document.getElementById("ts-in"); if(i) i.focus(); },100);
+}
+function applyToken(){
+  var i=document.getElementById("ts-in"); if(!i||!i.value.trim()) return;
+  setToken(i.value.trim());
+  var b=document.getElementById("ts-banner"); if(b) b.remove();
+  loadState();
+}
+
+function normState(){
+  PHONES.forEach(function(p){
+    if(!STATE[p.id]) STATE[p.id]={remaining:MAX_DAYS,history:[]};
+    if(STATE[p.id].remaining===undefined) STATE[p.id].remaining=MAX_DAYS;
+    if(!STATE[p.id].history) STATE[p.id].history=[];
   });
 }
 
-function saveState() {
-  try { localStorage.setItem(SKEY, JSON.stringify(STATE)); } catch(e) {}
+function loadState(){
+  var tok=getToken();
+  if(!tok){ showBanner(); normState(); renderCards(); return; }
+  fetch(GIST_URL,{headers:{"Authorization":"token "+tok,"Accept":"application/vnd.github.v3+json"}})
+  .then(function(r){ if(r.status===401){setToken("");showBanner();return null;} return r.json(); })
+  .then(function(data){
+    if(!data){ normState(); renderCards(); return; }
+    var f=data.files&&data.files[GIST_FILE];
+    if(f&&f.content&&f.content.trim()!=="{}"){
+      try{ var p=JSON.parse(f.content); if(p&&typeof p==="object") STATE=p; }catch(ex){}
+    }
+    normState(); renderCards();
+  })
+  .catch(function(){
+    try{ var x=localStorage.getItem(SKEY); if(x) STATE=JSON.parse(x); }catch(ex){}
+    normState(); renderCards();
+  });
+}
+
+function saveState(){
+  try{ localStorage.setItem(SKEY,JSON.stringify(STATE)); }catch(e){}
+  var tok=getToken(); if(!tok) return;
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    fetch(GIST_URL,{method:"PATCH",
+      headers:{"Authorization":"token "+tok,"Accept":"application/vnd.github.v3+json","Content-Type":"application/json"},
+      body:JSON.stringify({files:{"calling-state.json":{content:JSON.stringify(STATE)}}})
+    }).then(function(r){ if(r.status===401){setToken("");showBanner();} }).catch(function(){});
+  },800);
 }
 
 /* ---- Status helpers ---- */
@@ -283,7 +332,7 @@ function renderCards() {
       histHTML = '<div class="history-item">No days used yet</div>';
     } else {
       hist.forEach(function(h) {
-        histHTML += '<div class="history-item">Day used &mdash; ' + fmtDate(h.date) + '</div>';
+        histHTML += '<div class="history-item">Day used — ' + fmtDate(h.date) + '</div>';
       });
     }
 
@@ -348,7 +397,6 @@ function renderCards() {
 
 /* ---- Boot ---- */
 loadState();
-renderCards();
 </script>
 </body>
 </html>
